@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "apocalypse_items:block/example_block" }
+  }
+}

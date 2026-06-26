@@ -79,6 +79,27 @@ Example mod description.
     # Side this dependency is applied on - BOTH, CLIENT, or SERVER
     side="BOTH"
 
+[[dependencies.${mod_id}]]
+    modId="thirst"
+    type="optional"
+    versionRange="[1.21.1-2.0.3,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="firstaid"
+    type="optional"
+    versionRange="[1.2.7,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="epicfight"
+    type="optional"
+    versionRange="[21.0,)"
+    ordering="NONE"
+    side="BOTH"
+
 # Here's another dependency
 [[dependencies.${mod_id}]]
     modId="minecraft"

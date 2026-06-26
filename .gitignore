@@ -33,8 +33,19 @@ bin/
 .DS_Store
 
 ### Minecraft Modding ###
-run/
+run/*
 !**/src/**/run/
+src/generated/resources/
 **/src/generated/**/.cache/
 repo/
 !**/src/**/repo/
+
+### Mod Dependencies (local JARs) ###
+libs/
+
+### Blockbench ###
+*.bbmodel
+
+### macOS (extended) ###
+**/.DS_Store
+._*
