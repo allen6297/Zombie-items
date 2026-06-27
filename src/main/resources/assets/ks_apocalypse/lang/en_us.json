@@ -1,0 +1,16 @@
+{
+  "itemGroup.ks_apocalypse": "Apocalypse Items",
+  "itemGroup.apocalypse_weapons": "Apocalypse Weapons",
+  "block.ks_apocalypse.example_block": "Example Block",
+  "item.ks_apocalypse.can1": "Can [small]",
+  "item.ks_apocalypse.can2": "Can [big]",
+  "item.ks_apocalypse.bandage": "Bandage",
+  "item.ks_apocalypse.zombie_knife": "Zombie Knife",
+  "ks_apocalypse.configuration.title": "Zombie Items Configs",
+  "ks_apocalypse.configuration.section.ks_apocalypse.common.toml": "Zombie Items Configs",
+  "ks_apocalypse.configuration.section.ks_apocalypse.common.toml.title": "Zombie Items Configs",
+  "ks_apocalypse.configuration.items": "Item List",
+  "ks_apocalypse.configuration.logDirtBlock": "Log Dirt Block",
+  "ks_apocalypse.configuration.magicNumberIntroduction": "Magic Number Text",
+  "ks_apocalypse.configuration.magicNumber": "Magic Number"
+}

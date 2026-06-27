@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "ks_apocalypse:item/zombie_knife"
+  }
+}

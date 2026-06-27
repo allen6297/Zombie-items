@@ -109,6 +109,9 @@ neoForge {
         "${mod_id}" {
             sourceSet(sourceSets.main)
         }
+        "ks_survival" {
+            sourceSet(sourceSets.main)
+        }
     }
 }
 
@@ -142,11 +145,21 @@ dependencies {
     compileOnly "maven.modrinth:thirst-was-taken:1.21.1-2.0.3"
     localRuntime "maven.modrinth:thirst-was-taken:1.21.1-2.0.3"
 
-    compileOnly "maven.modrinth:first-aid-new:1.2.7+neoforge1.21.1"
-    localRuntime "maven.modrinth:first-aid-new:1.2.7+neoforge1.21.1"
+    // configuration-neoforge v3.x was never published to Maven for 1.21.1.
+    // tarkovcraft-core and med-system require it at runtime, so we can't run
+    // them locally. Keep compileOnly so MedSystemCompat.java compiles; in
+    // production users install the full mod stack themselves.
+    compileOnly "maven.modrinth:tarkovcraft-core:2.5.1+1.21.1"
+    compileOnly "maven.modrinth:med-system:2.8.0+1.21.1"
 
     compileOnly "maven.modrinth:epic-fight:21.17.3.1-mc1.21.1-neoforge"
     localRuntime "maven.modrinth:epic-fight:21.17.3.1-mc1.21.1-neoforge"
+
+    compileOnly "maven.modrinth:jade:15.10.5+neoforge"
+    localRuntime "maven.modrinth:jade:15.10.5+neoforge"
+
+    compileOnly "maven.modrinth:curios:9.5.1+1.21.1"
+    localRuntime "maven.modrinth:curios:9.5.1+1.21.1"
 
     // For more info:
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html

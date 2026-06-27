@@ -87,9 +87,9 @@ Example mod description.
     side="BOTH"
 
 [[dependencies.${mod_id}]]
-    modId="firstaid"
+    modId="medsystem"
     type="optional"
-    versionRange="[1.2.7,)"
+    versionRange="[2.0,)"
     ordering="NONE"
     side="BOTH"
 
@@ -97,6 +97,49 @@ Example mod description.
     modId="epicfight"
     type="optional"
     versionRange="[21.0,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[mods]]
+modId="ks_survival"
+version="${mod_version}"
+displayName="K's Survival"
+description='''
+Survival mechanics addon for K's Apocalypse.
+'''
+
+[[dependencies.ks_survival]]
+    modId="neoforge"
+    type="required"
+    versionRange="[${neo_version},)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.ks_survival]]
+    modId="minecraft"
+    type="required"
+    versionRange="${minecraft_version_range}"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.ks_survival]]
+    modId="ks_apocalypse"
+    type="required"
+    versionRange="[1.0,)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.ks_survival]]
+    modId="jade"
+    type="optional"
+    versionRange="[15.0,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.ks_survival]]
+    modId="curios"
+    type="optional"
+    versionRange="[9.0,)"
     ordering="NONE"
     side="BOTH"
 
