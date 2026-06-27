@@ -130,6 +130,13 @@ Survival mechanics addon for K's Apocalypse.
     side="BOTH"
 
 [[dependencies.ks_survival]]
+    modId="animal_feeding_trough"
+    type="optional"
+    versionRange="[1.0,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.ks_survival]]
     modId="jade"
     type="optional"
     versionRange="[15.0,)"

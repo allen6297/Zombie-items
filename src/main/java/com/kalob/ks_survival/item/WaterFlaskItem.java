@@ -1,6 +1,7 @@
 package com.kalob.ks_survival.item;
 
 import com.kalob.ks_survival.init.ModAttachments;
+import com.kalob.ks_survival.init.SurvivalConfig;
 import com.kalob.ks_survival.farming.FarmAnimalData;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -20,6 +21,7 @@ public class WaterFlaskItem extends Item {
     @Override
     public @NotNull InteractionResult interactLivingEntity(@NotNull ItemStack stack, @NotNull Player player, @NotNull LivingEntity entity, @NotNull InteractionHand hand) {
         if (!(entity instanceof Animal animal)) return InteractionResult.PASS;
+        if (!SurvivalConfig.isTrackedAnimal(animal)) return InteractionResult.PASS;
         if (animal.level().isClientSide()) return InteractionResult.SUCCESS;
 
         FarmAnimalData data = animal.getData(ModAttachments.FARM_ANIMAL.get());

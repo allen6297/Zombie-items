@@ -3,6 +3,7 @@ package com.kalob.ks_survival.compat;
 import com.kalob.ks_survival.KsSurvival;
 import com.kalob.ks_survival.farming.FarmAnimalData;
 import com.kalob.ks_survival.init.ModAttachments;
+import com.kalob.ks_survival.init.SurvivalConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -28,6 +29,7 @@ public class AnimalDataProvider implements IEntityComponentProvider, IServerData
     @Override
     public void appendServerData(CompoundTag data, EntityAccessor accessor) {
         if (!(accessor.getEntity() instanceof Animal animal)) return;
+        if (!SurvivalConfig.isTrackedAnimal(animal)) return;
         FarmAnimalData farmData = animal.getData(ModAttachments.FARM_ANIMAL.get());
         data.putInt("hunger", farmData.getHunger());
         data.putInt("thirst", farmData.getThirst());

@@ -40,9 +40,15 @@ public class FarmAnimalData {
     public void feed() { this.hunger = MAX; }
     public void water() { this.thirst = MAX; }
 
-    public void tick() {
-        if (hunger > 0) hunger--;
-        if (thirst > 0) thirst--;
+    public void tick(boolean nearWater, boolean nearFeedingTrough) {
+        if (nearFeedingTrough) { if (hunger < MAX) hunger++; }
+        else { if (hunger > 0) hunger--; }
+        if (nearWater) { if (thirst < MAX) thirst++; }
+        else { if (thirst > 0) thirst--; }
+    }
+
+    public boolean isThirsty() {
+        return thirst < stressThreshold();
     }
 
     public boolean isStressed() {

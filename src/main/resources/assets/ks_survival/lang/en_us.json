@@ -1,8 +1,11 @@
 {
+  "config.jade.plugin_ks_survival.animal_data": "Animal Data Overlay",
+  "config.jade.plugin_ks_survival.water_trough": "Water Trough Overlay",
   "itemGroup.ks_survival": "K's Survival",
   "item.ks_survival.feed_bag": "Feed Bag",
   "item.ks_survival.water_flask": "Water Flask",
   "item.ks_survival.butcher_knife": "Butcher Knife",
+  "block.ks_survival.water_trough": "Water Trough",
   "item.ks_survival.salt": "Salt",
   "item.ks_survival.salted_meat": "Salted Meat"
 }

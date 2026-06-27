@@ -2,6 +2,8 @@ package com.kalob.ks_survival;
 
 import com.kalob.ks_survival.farming.FarmingEvents;
 import com.kalob.ks_survival.init.ModAttachments;
+import com.kalob.ks_survival.init.SurvivalBlockEntities;
+import com.kalob.ks_survival.init.SurvivalBlocks;
 import com.kalob.ks_survival.init.SurvivalConfig;
 import com.kalob.ks_survival.init.SurvivalCreativeTabs;
 import com.kalob.ks_survival.init.SurvivalItems;
@@ -18,6 +20,8 @@ public class KsSurvival {
 
     public KsSurvival(IEventBus modEventBus, ModContainer modContainer) {
         ModAttachments.ATTACHMENT_TYPES.register(modEventBus);
+        SurvivalBlocks.BLOCKS.register(modEventBus);
+        SurvivalBlockEntities.BLOCK_ENTITY_TYPES.register(modEventBus);
         SurvivalItems.ITEMS.register(modEventBus);
         SurvivalCreativeTabs.CREATIVE_MODE_TABS.register(modEventBus);
         NeoForge.EVENT_BUS.register(FarmingEvents.class);

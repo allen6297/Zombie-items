@@ -5,6 +5,7 @@ import com.kalob.ks_survival.item.ButcherKnifeItem;
 import com.kalob.ks_survival.item.FeedBagItem;
 import com.kalob.ks_survival.item.WaterFlaskItem;
 import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -21,6 +22,8 @@ public class SurvivalItems {
 
     public static final DeferredItem<Item> BUTCHER_KNIFE = ITEMS.register("butcher_knife",
             () -> new ButcherKnifeItem(new Item.Properties().stacksTo(1)));
+
+    public static final DeferredItem<BlockItem> WATER_TROUGH = ITEMS.registerSimpleBlockItem(SurvivalBlocks.WATER_TROUGH);
 
     public static final DeferredItem<Item> SALT = ITEMS.registerSimpleItem("salt",
             new Item.Properties().stacksTo(64));

@@ -158,6 +158,12 @@ dependencies {
     compileOnly "maven.modrinth:jade:15.10.5+neoforge"
     localRuntime "maven.modrinth:jade:15.10.5+neoforge"
 
+    compileOnly "maven.modrinth:architectury-api:13.0.8+neoforge"
+    localRuntime "maven.modrinth:architectury-api:13.0.8+neoforge"
+
+    compileOnly "maven.modrinth:animal_feeding_trough:1.1.2+1.21(.1)-neoforge"
+    localRuntime "maven.modrinth:animal_feeding_trough:1.1.2+1.21(.1)-neoforge"
+
     compileOnly "maven.modrinth:curios:9.5.1+1.21.1"
     localRuntime "maven.modrinth:curios:9.5.1+1.21.1"
 
