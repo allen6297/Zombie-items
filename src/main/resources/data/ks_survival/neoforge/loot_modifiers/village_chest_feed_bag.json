@@ -1,0 +1,10 @@
+{
+  "type": "ks_survival:add_items",
+  "conditions": [
+    { "condition": "neoforge:loot_table_id", "loot_table_id": "minecraft:chests/village/village_plains_house" }
+  ],
+  "item": "ks_survival:feed_bag",
+  "chance": 0.25,
+  "min_count": 1,
+  "max_count": 2
+}

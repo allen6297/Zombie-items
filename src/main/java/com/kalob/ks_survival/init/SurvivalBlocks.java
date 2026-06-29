@@ -1,6 +1,7 @@
 package com.kalob.ks_survival.init;
 
 import com.kalob.ks_survival.KsSurvival;
+import com.kalob.ks_survival.block.FoodTroughBlock;
 import com.kalob.ks_survival.block.WaterTroughBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -13,4 +14,7 @@ public class SurvivalBlocks {
 
     public static final DeferredBlock<WaterTroughBlock> WATER_TROUGH = BLOCKS.register("water_trough",
             () -> new WaterTroughBlock(BlockBehaviour.Properties.of().strength(1.5f).sound(SoundType.WOOD).noOcclusion()));
+
+    public static final DeferredBlock<FoodTroughBlock> FOOD_TROUGH = BLOCKS.register("food_trough",
+            () -> new FoodTroughBlock(BlockBehaviour.Properties.of().strength(1.5f).sound(SoundType.WOOD).noOcclusion()));
 }

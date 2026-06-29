@@ -1,0 +1,19 @@
+{
+  "name": "Medicine",
+  "category": "ks_apocalypse:farming",
+  "icon": "ks_survival:medicine",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Sick Animals",
+      "text": "An animal that stays stressed long enough becomes $(c)Sick$(). Sick animals move slowly and produce nothing. A smoke particle effect appears above them. Use $(l)Medicine$() to cure sickness and clear the stress counter."
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Crafting Medicine",
+      "recipe": "ks_survival:medicine",
+      "text": "Right-click a sick animal with Medicine to cure it. Keep your troughs stocked to prevent illness in the first place."
+    }
+  ]
+}

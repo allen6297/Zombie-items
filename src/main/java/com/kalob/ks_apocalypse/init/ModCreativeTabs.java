@@ -22,7 +22,6 @@ public class ModCreativeTabs {
                         output.accept(ModItems.CAN1.get());
                         output.accept(ModItems.CAN2.get());
                         output.accept(ModItems.BANDAGE.get());
-                        output.accept(ModBlocks.EXAMPLE_BLOCK.get());
                     }).build());
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> APOCALYPSE_WEAPONS_TAB=
             CREATIVE_MODE_TABS.register("apocalypse_weapons", () -> CreativeModeTab.builder()

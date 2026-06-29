@@ -124,52 +124,41 @@ configurations {
 }
 
 dependencies {
-    // Example optional mod dependency with JEI
-    // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
-    // compileOnly "mezz.jei:jei-${mc_version}-common-api:${jei_version}"
-    // compileOnly "mezz.jei:jei-${mc_version}-neoforge-api:${jei_version}"
-    // We add the full version to localRuntime, not runtimeOnly, so that we do not publish a dependency on it
-    // localRuntime "mezz.jei:jei-${mc_version}-neoforge:${jei_version}"
-
-    // Example mod dependency using a mod jar from ./libs with a flat dir repository
-    // This maps to ./libs/coolmod-${mc_version}-${coolmod_version}.jar
-    // The group id is ignored when searching -- in this case, it is "blank"
-    // implementation "blank:coolmod-${mc_version}:${coolmod_version}"
-
-    // Example mod dependency using a file as dependency
-    // implementation files("libs/coolmod-${mc_version}-${coolmod_version}.jar")
-
-    // Example project dependency using a sister or child project:
-    // implementation project(":myproject")
-
+    // --- Core mod dependencies (required) ---
     compileOnly "maven.modrinth:thirst-was-taken:1.21.1-2.0.3"
     localRuntime "maven.modrinth:thirst-was-taken:1.21.1-2.0.3"
 
-    // configuration-neoforge v3.x was never published to Maven for 1.21.1.
-    // tarkovcraft-core and med-system require it at runtime, so we can't run
-    // them locally. Keep compileOnly so MedSystemCompat.java compiles; in
-    // production users install the full mod stack themselves.
-    compileOnly "maven.modrinth:tarkovcraft-core:2.5.1+1.21.1"
-    compileOnly "maven.modrinth:med-system:2.8.0+1.21.1"
+    // --- Guidebook ---
+    compileOnly "maven.modrinth:patchouli:BIogJv2D"           // 1.21.1-93-neoforge
+    localRuntime "maven.modrinth:patchouli:BIogJv2D"
 
-    compileOnly "maven.modrinth:epic-fight:21.17.3.1-mc1.21.1-neoforge"
-    localRuntime "maven.modrinth:epic-fight:21.17.3.1-mc1.21.1-neoforge"
-
+    // --- HUD / Tooltip ---
     compileOnly "maven.modrinth:jade:15.10.5+neoforge"
     localRuntime "maven.modrinth:jade:15.10.5+neoforge"
 
-    compileOnly "maven.modrinth:architectury-api:13.0.8+neoforge"
-    localRuntime "maven.modrinth:architectury-api:13.0.8+neoforge"
+    // --- Season integration ---
+    compileOnly "maven.modrinth:serene-seasons:SPj5bJoM"
+    localRuntime "maven.modrinth:serene-seasons:SPj5bJoM"
 
-    compileOnly "maven.modrinth:animal_feeding_trough:1.1.2+1.21(.1)-neoforge"
-    localRuntime "maven.modrinth:animal_feeding_trough:1.1.2+1.21(.1)-neoforge"
+    // --- Combat ---
+    compileOnly "maven.modrinth:epic-fight:21.17.3.1-mc1.21.1-neoforge"
+    localRuntime "maven.modrinth:epic-fight:21.17.3.1-mc1.21.1-neoforge"
 
+    // --- Accessories ---
     compileOnly "maven.modrinth:curios:9.5.1+1.21.1"
     localRuntime "maven.modrinth:curios:9.5.1+1.21.1"
 
-    // For more info:
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
+    // GlitchCore — runtime library required by Epic Fight
+    compileOnly "maven.modrinth:glitchcore:S2TfWrZR"
+    localRuntime "maven.modrinth:glitchcore:S2TfWrZR"
+
+    // Architectury API — required by Curios
+    compileOnly "maven.modrinth:architectury-api:13.0.8+neoforge"
+    localRuntime "maven.modrinth:architectury-api:13.0.8+neoforge"
+
+    // --- Medical system (compile-only — configuration-neoforge v3.x not on Maven for 1.21.1) ---
+    compileOnly "maven.modrinth:tarkovcraft-core:2.5.1+1.21.1"
+    compileOnly "maven.modrinth:med-system:2.8.0+1.21.1"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

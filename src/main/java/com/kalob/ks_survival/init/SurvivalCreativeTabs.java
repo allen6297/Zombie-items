@@ -1,10 +1,8 @@
 package com.kalob.ks_survival.init;
 
 import com.kalob.ks_survival.KsSurvival;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -23,11 +21,9 @@ public class SurvivalCreativeTabs {
                     .displayItems((parameters, output) -> {
                         output.accept(SurvivalItems.FEED_BAG.get());
                         output.accept(SurvivalItems.WATER_FLASK.get());
+                        output.accept(SurvivalItems.WATER_FLASK_FILLED.get());
+                        output.accept(SurvivalItems.MEDICINE.get());
                         output.accept(SurvivalItems.WATER_TROUGH.get());
-                        output.accept(SurvivalItems.BUTCHER_KNIFE.get());
-                        output.accept(SurvivalItems.SALT.get());
-                        output.accept(SurvivalItems.SALTED_MEAT.get());
-                        BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath("animal_feeding_trough", "feeding_trough"))
-                                .ifPresent(output::accept);
+                        output.accept(SurvivalItems.FOOD_TROUGH.get());
                     }).build());
 }

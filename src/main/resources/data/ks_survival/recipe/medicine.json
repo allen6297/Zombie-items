@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " P ",
+    "PGP",
+    " P "
+  ],
+  "key": {
+    "P": { "item": "minecraft:paper" },
+    "G": { "item": "minecraft:glistering_melon_slice" }
+  },
+  "result": {
+    "id": "ks_survival:medicine",
+    "count": 2
+  }
+}

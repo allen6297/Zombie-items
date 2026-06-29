@@ -5,6 +5,7 @@ import com.kalob.ks_apocalypse.init.Config;
 import com.kalob.ks_apocalypse.init.ModBlocks;
 import com.kalob.ks_apocalypse.init.ModCreativeTabs;
 import com.kalob.ks_apocalypse.init.ModItems;
+import com.kalob.ks_apocalypse.init.ModLootModifiers;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModContainer;
@@ -21,6 +22,7 @@ public class KsApocalypse {
         ModBlocks.BLOCKS.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
         ModCreativeTabs.CREATIVE_MODE_TABS.register(modEventBus);
+        ModLootModifiers.LOOT_MODIFIERS.register(modEventBus);
         if (ModList.get().isLoaded("thirst")) {
             NeoForge.EVENT_BUS.register(ThirstCompat.class);
         }

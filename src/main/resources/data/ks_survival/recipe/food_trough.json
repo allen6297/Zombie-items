@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "W W",
+    "W W",
+    "WSW"
+  ],
+  "key": {
+    "W": { "tag": "minecraft:planks" },
+    "S": { "item": "minecraft:stick" }
+  },
+  "result": {
+    "id": "ks_survival:food_trough",
+    "count": 1
+  }
+}

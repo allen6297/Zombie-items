@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LL",
+    "WW",
+    "WW"
+  ],
+  "key": {
+    "L": { "item": "minecraft:leather" },
+    "W": { "item": "minecraft:wheat" }
+  },
+  "result": {
+    "id": "ks_survival:feed_bag",
+    "count": 2
+  }
+}

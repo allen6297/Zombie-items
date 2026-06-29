@@ -1,0 +1,11 @@
+{
+  "type": "ks_apocalypse:add_items",
+  "conditions": [
+    { "condition": "minecraft:killed_by_player" },
+    { "condition": "neoforge:loot_table_id", "loot_table_id": "minecraft:entities/zombie" }
+  ],
+  "item": "ks_apocalypse:bandage",
+  "chance": 0.08,
+  "min_count": 1,
+  "max_count": 1
+}

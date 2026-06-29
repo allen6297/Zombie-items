@@ -1,0 +1,28 @@
+{
+  "name": "Breeding & Genetics",
+  "category": "ks_apocalypse:farming",
+  "icon": "minecraft:egg",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Breeding Seasons",
+      "text": "Animals can only breed during their natural season. Try to breed out of season and nothing will happen. $(a)Domestic animals$() have earned enough trust to breed year-round.\n\nInstall $(l)Serene Seasons$() to enable this feature."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Default Seasons",
+      "text": "$(l)Cows$(): Spring, Summer\n$(l)Pigs$(): Spring, Summer, Autumn\n$(l)Sheep$(): Spring\n$(l)Goats$(): Autumn, Winter\n$(l)Chickens$(): Spring, Summer\n\nSeasons can be changed per-animal in the mod config."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Coat Genetics",
+      "text": "Every animal carries two coat alleles — inherited from both parents in a Punnett-square style. The dominant allele determines appearance.\n\n$(0)Normal$() › $(8)Dark$() › $(7)Cream$() › $(f)Albino$()\n\nAlbino is the rarest — both alleles must be Albino to express it."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Inheritance",
+      "text": "Each parent contributes one random allele. Breeding two Cream animals gives a high chance of Cream offspring. Breeding a Normal with an Albino will almost always produce Normal offspring, but the Albino allele is hidden and can reappear in later generations."
+    }
+  ]
+}

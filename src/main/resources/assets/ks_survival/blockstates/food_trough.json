@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "ks_survival:block/food_trough" }
+  }
+}

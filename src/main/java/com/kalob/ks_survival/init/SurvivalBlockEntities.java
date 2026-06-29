@@ -1,6 +1,7 @@
 package com.kalob.ks_survival.init;
 
 import com.kalob.ks_survival.KsSurvival;
+import com.kalob.ks_survival.block.FoodTroughBlockEntity;
 import com.kalob.ks_survival.block.WaterTroughBlockEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -15,4 +16,8 @@ public class SurvivalBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<WaterTroughBlockEntity>> WATER_TROUGH =
             BLOCK_ENTITY_TYPES.register("water_trough", () ->
                     BlockEntityType.Builder.of(WaterTroughBlockEntity::new, SurvivalBlocks.WATER_TROUGH.get()).build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<FoodTroughBlockEntity>> FOOD_TROUGH =
+            BLOCK_ENTITY_TYPES.register("food_trough", () ->
+                    BlockEntityType.Builder.of(FoodTroughBlockEntity::new, SurvivalBlocks.FOOD_TROUGH.get()).build(null));
 }
