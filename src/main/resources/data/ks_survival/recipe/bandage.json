@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SWS"
+  ],
+  "key": {
+    "S": { "item": "minecraft:string" },
+    "W": { "item": "minecraft:white_wool" }
+  },
+  "result": {
+    "id": "ks_survival:bandage",
+    "count": 2
+  }
+}

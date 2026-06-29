@@ -1,0 +1,24 @@
+{
+  "name": "Water Trough",
+  "category": "ks_survival:farming",
+  "icon": "ks_survival:water_trough",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Fresh Water",
+      "text": "Animals need water just as much as food. A $(l:ks_survival:farming/water_trough)Water Trough$() holds up to 4000 mB of water. Animals will seek it out when thirsty."
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Crafting",
+      "recipe": "ks_survival:water_trough",
+      "text": "Fill it with a water bucket. It also refills slowly from rain if the sky is visible above it."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Thirst",
+      "text": "Thirst works the same as hunger — it runs from 0 to 100 and decays over time. In $(9)summer$() thirst drains faster. In $(b)winter$() hunger drains faster instead. Keep both troughs stocked year-round."
+    }
+  ]
+}

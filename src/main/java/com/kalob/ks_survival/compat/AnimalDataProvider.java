@@ -1,11 +1,13 @@
 package com.kalob.ks_survival.compat;
 
 import com.kalob.ks_survival.KsSurvival;
-import com.kalob.ks_survival.compat.SereneSeasonsCompat;
 import com.kalob.ks_survival.farming.FarmAnimalData;
+import com.kalob.ks_survival.farming.genetics.ClimateVariant;
 import com.kalob.ks_survival.farming.genetics.Coat;
+import com.kalob.ks_survival.farming.genetics.Gender;
+import com.kalob.ks_survival.farming.genetics.Pattern;
+import com.kalob.ks_survival.farming.genetics.Trait;
 import com.kalob.ks_survival.init.ModAttachments;
-import com.kalob.ks_survival.init.SurvivalConfig;
 import com.kalob.ks_survival.init.SurvivalConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -44,6 +46,10 @@ public class AnimalDataProvider implements IEntityComponentProvider, IServerData
         data.putInt("tameness", d.getTameness());
         data.putString("tamenessLabel", d.isWild() ? "Wild" : d.isAdjusting() ? "Adjusting" : "Domestic");
         data.putString("coat", d.getExpressedCoat().name());
+        data.putString("trait", d.getExpressedTrait().name());
+        data.putString("pattern", d.getExpressedPattern().name());
+        data.putString("gender", d.getExpressedGender().name());
+        data.putString("climate", d.getExpressedClimate().name());
         var seasons = SurvivalConfig.getBreedingSeasons(animal);
         boolean canBreed = SereneSeasonsCompat.isBreedingSeason(animal.level(), animal, seasons, d.isDomestic());
         data.putBoolean("canBreed", canBreed);
@@ -53,6 +59,25 @@ public class AnimalDataProvider implements IEntityComponentProvider, IServerData
     public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
         CompoundTag data = accessor.getServerData();
         if (!data.contains("hunger")) return;
+
+        if (data.contains("climate")) {
+            ClimateVariant climate = ClimateVariant.valueOf(data.getString("climate"));
+            ChatFormatting climateColor = switch (climate) {
+                case COLD     -> ChatFormatting.AQUA;
+                case ARID     -> ChatFormatting.GOLD;
+                case TROPICAL -> ChatFormatting.GREEN;
+                default       -> ChatFormatting.GRAY;
+            };
+            if (climate != ClimateVariant.TEMPERATE) {
+                tooltip.add(Component.literal("Climate: " + climate.displayName()).withStyle(climateColor));
+            }
+        }
+
+        if (data.contains("gender")) {
+            Gender gender = Gender.valueOf(data.getString("gender"));
+            ChatFormatting genderColor = gender == Gender.MALE ? ChatFormatting.BLUE : ChatFormatting.LIGHT_PURPLE;
+            tooltip.add(Component.literal(gender.symbol() + " " + gender.displayName()).withStyle(genderColor));
+        }
 
         tooltip.add(statusLine("Hunger", data.getInt("hunger")));
         tooltip.add(statusLine("Thirst", data.getInt("thirst")));
@@ -75,13 +100,28 @@ public class AnimalDataProvider implements IEntityComponentProvider, IServerData
         if (data.contains("coat")) {
             Coat coat = Coat.valueOf(data.getString("coat"));
             if (coat != Coat.NORMAL) {
-                String label = switch (coat) {
-                    case DARK -> "Dark";
-                    case CREAM -> "Cream";
-                    case ALBINO -> "Albino";
-                    default -> "";
+                tooltip.add(Component.literal("Coat: " + coat.name().charAt(0) + coat.name().substring(1).toLowerCase())
+                        .withStyle(ChatFormatting.GRAY));
+            }
+        }
+
+        if (data.contains("pattern")) {
+            Pattern pattern = Pattern.valueOf(data.getString("pattern"));
+            if (pattern != Pattern.SOLID) {
+                tooltip.add(Component.literal("Pattern: " + pattern.displayName()).withStyle(ChatFormatting.GRAY));
+            }
+        }
+
+        if (data.contains("trait")) {
+            Trait trait = Trait.valueOf(data.getString("trait"));
+            if (trait != Trait.NONE) {
+                ChatFormatting traitColor = switch (trait) {
+                    case HARDY -> ChatFormatting.GREEN;
+                    case FECUND -> ChatFormatting.AQUA;
+                    case GLUTTONY -> ChatFormatting.GOLD;
+                    default -> ChatFormatting.GRAY;
                 };
-                tooltip.add(Component.literal("Coat: " + label).withStyle(ChatFormatting.GRAY));
+                tooltip.add(Component.literal("Trait: " + trait.displayName()).withStyle(traitColor));
             }
         }
 

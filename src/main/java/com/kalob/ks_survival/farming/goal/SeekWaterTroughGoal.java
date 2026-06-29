@@ -75,9 +75,7 @@ public class SeekWaterTroughGoal extends Goal {
                                 5, 0.3, 0.3, 0.3, 0.0);
                     }
                     PacketDistributor.sendToPlayersTrackingEntity(mob,
-                            new FarmAnimalSyncPacket(mob.getId(), data.getHunger(), data.getThirst(),
-                                    data.getWellFedTicks(), data.getStressTicks(), data.getOverfedTicks(), data.getTameness(), data.getPanicTicks(),
-                                    data.getAlleleA(), data.getAlleleB()));
+                            new FarmAnimalSyncPacket(mob.getId(), data));
                 }
             }
         }

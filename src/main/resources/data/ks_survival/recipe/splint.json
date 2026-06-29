@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S S",
+    "SWS",
+    "S S"
+  ],
+  "key": {
+    "S": { "item": "minecraft:stick" },
+    "W": { "item": "minecraft:white_wool" }
+  },
+  "result": {
+    "id": "ks_survival:splint",
+    "count": 2
+  }
+}

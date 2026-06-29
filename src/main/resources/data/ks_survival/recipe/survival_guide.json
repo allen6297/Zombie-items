@@ -7,7 +7,7 @@
   "result": {
     "id": "patchouli:guide_book",
     "components": {
-      "patchouli:book": "ks_apocalypse:survival_guide"
+      "patchouli:book": "ks_survival:survival_guide"
     }
   }
 }

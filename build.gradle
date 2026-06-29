@@ -103,13 +103,7 @@ neoForge {
     }
 
     mods {
-        // define mod <-> source bindings
-        // these are used to tell the game which sources are for which mod
-        // multi mod projects should define one per mod
         "${mod_id}" {
-            sourceSet(sourceSets.main)
-        }
-        "ks_survival" {
             sourceSet(sourceSets.main)
         }
     }
@@ -156,9 +150,6 @@ dependencies {
     compileOnly "maven.modrinth:architectury-api:13.0.8+neoforge"
     localRuntime "maven.modrinth:architectury-api:13.0.8+neoforge"
 
-    // --- Medical system (compile-only — configuration-neoforge v3.x not on Maven for 1.21.1) ---
-    compileOnly "maven.modrinth:tarkovcraft-core:2.5.1+1.21.1"
-    compileOnly "maven.modrinth:med-system:2.8.0+1.21.1"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

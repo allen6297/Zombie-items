@@ -26,6 +26,16 @@ public enum Coat {
         return a.ordinal() <= b.ordinal() ? a : b;
     }
 
+    public static Coat random(RandomSource rng, ClimateVariant climate) {
+        int r = rng.nextInt(100);
+        return switch (climate) {
+            case COLD     -> r < 40 ? NORMAL : r < 70 ? DARK  : r < 88 ? CREAM  : ALBINO;
+            case ARID     -> r < 40 ? NORMAL : r < 55 ? DARK  : r < 80 ? CREAM  : ALBINO;
+            case TROPICAL -> r < 50 ? NORMAL : r < 65 ? DARK  : r < 85 ? CREAM  : ALBINO;
+            default       -> r < 62 ? NORMAL : r < 82 ? DARK  : r < 95 ? CREAM  : ALBINO;
+        };
+    }
+
     public static Coat random(RandomSource rng) {
         int roll = rng.nextInt(100);
         if (roll < 5)  return ALBINO;   // 5%

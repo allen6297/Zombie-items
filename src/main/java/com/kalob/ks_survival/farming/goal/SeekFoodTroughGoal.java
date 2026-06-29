@@ -85,9 +85,7 @@ public class SeekFoodTroughGoal extends Goal {
                     mob.level().sendBlockUpdated(targetPos, mob.level().getBlockState(targetPos),
                             mob.level().getBlockState(targetPos), 3);
                     PacketDistributor.sendToPlayersTrackingEntity(mob,
-                            new FarmAnimalSyncPacket(mob.getId(), data.getHunger(), data.getThirst(),
-                                    data.getWellFedTicks(), data.getStressTicks(), data.getOverfedTicks(), data.getTameness(), data.getPanicTicks(),
-                                    data.getAlleleA(), data.getAlleleB()));
+                            new FarmAnimalSyncPacket(mob.getId(), data));
                 }
             }
         }

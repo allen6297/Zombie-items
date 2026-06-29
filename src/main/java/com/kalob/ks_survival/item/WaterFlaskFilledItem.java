@@ -31,10 +31,7 @@ public class WaterFlaskFilledItem extends Item {
         FarmAnimalData data = animal.getData(ModAttachments.FARM_ANIMAL.get());
         data.water();
         animal.setData(ModAttachments.FARM_ANIMAL.get(), data);
-        PacketDistributor.sendToPlayersTrackingEntity(animal,
-                new FarmAnimalSyncPacket(animal.getId(), data.getHunger(), data.getThirst(),
-                        data.getWellFedTicks(), data.getStressTicks(), data.getOverfedTicks(), data.getTameness(), data.getPanicTicks(),
-                        data.getAlleleA(), data.getAlleleB()));
+        PacketDistributor.sendToPlayersTrackingEntity(animal, new FarmAnimalSyncPacket(animal.getId(), data));
         animal.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
 
         if (!player.getAbilities().instabuild) {

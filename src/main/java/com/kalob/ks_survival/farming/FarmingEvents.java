@@ -1,11 +1,12 @@
 package com.kalob.ks_survival.farming;
 
-import com.kalob.ks_survival.block.FoodTroughBlockEntity;
 import com.kalob.ks_survival.compat.SereneSeasonsCompat;
+import com.kalob.ks_survival.farming.genetics.ClimateVariant;
+import com.kalob.ks_survival.farming.genetics.Gender;
+import com.kalob.ks_survival.farming.genetics.Trait;
 import com.kalob.ks_survival.farming.goal.FollowHerdGoal;
 import com.kalob.ks_survival.farming.goal.SeekFoodTroughGoal;
 import com.kalob.ks_survival.farming.goal.SeekWaterTroughGoal;
-import com.kalob.ks_survival.init.SurvivalBlocks;
 import com.kalob.ks_survival.init.ModAttachments;
 import com.kalob.ks_survival.init.SurvivalConfig;
 import com.kalob.ks_survival.item.MedicineItem;
@@ -48,8 +49,10 @@ public class FarmingEvents {
 
         // Only assign genetics on first spawn, not on chunk load
         if (!event.loadedFromDisk()) {
+            ClimateVariant climate = ClimateVariant.fromBiome(
+                    animal.level().getBiome(animal.blockPosition()));
             FarmAnimalData data = animal.getData(ModAttachments.FARM_ANIMAL.get());
-            data.setRandomAlleles(animal.level().getRandom());
+            data.setRandomAlleles(animal.level().getRandom(), climate);
             animal.setData(ModAttachments.FARM_ANIMAL.get(), data);
         }
     }
@@ -70,7 +73,6 @@ public class FarmingEvents {
                 animal.blockPosition().offset(-5, -1, -5),
                 animal.blockPosition().offset(5, 1, 5)
         ).anyMatch(pos -> animal.level().getFluidState(pos).is(FluidTags.WATER));
-        boolean nearFeedingTrough = isNearFoodTrough(animal);
 
         int extraHungerDrain = SereneSeasonsCompat.extraHungerDrain(animal.level());
         int extraThirstDrain = SereneSeasonsCompat.extraThirstDrain(animal.level());
@@ -89,7 +91,7 @@ public class FarmingEvents {
 
         // - Core stat update -
         FarmAnimalData data = animal.getData(ModAttachments.FARM_ANIMAL.get());
-        data.tick(nearWater, nearFeedingTrough, extraHungerDrain, extraThirstDrain, safetyBonus);
+        data.tick(nearWater, extraHungerDrain, extraThirstDrain, safetyBonus);
 
         // Tameness ticks up when healthy; being near a domestic animal gives an extra tick
         boolean nearDomestic = herd.stream().anyMatch(a ->
@@ -118,8 +120,9 @@ public class FarmingEvents {
         // player, scatter in a random direction so they don't stand still
         if (data.isWild() || data.isPanicking()) {
             boolean fleeingPlayer = false;
+            double fleeRadiusSq = Math.pow(SurvivalConfig.FLEE_RADIUS.get(), 2);
             for (var player : animal.level().players()) {
-                if (player.distanceToSqr(animal) < 25) {
+                if (player.distanceToSqr(animal) < fleeRadiusSq) {
                     data.panicFor(1200); // 60 seconds
                     double fleeX = animal.getX() + (animal.getX() - player.getX()) * 2;
                     double fleeZ = animal.getZ() + (animal.getZ() - player.getZ()) * 2;
@@ -227,6 +230,13 @@ public class FarmingEvents {
         if (!SurvivalConfig.isTrackedAnimal(parentA)) return;
 
         FarmAnimalData dataA = parentA.getData(ModAttachments.FARM_ANIMAL.get());
+        FarmAnimalData dataB2 = (event.getParentB() instanceof Animal pb) ? pb.getData(ModAttachments.FARM_ANIMAL.get()) : null;
+
+        // Require opposite genders
+        if (dataB2 != null && dataA.getExpressedGender() == dataB2.getExpressedGender()) {
+            event.setCanceled(true);
+            return;
+        }
 
         // Domestic animals can breed year-round; wild/adjusting animals respect seasons
         var seasons = SurvivalConfig.getBreedingSeasons(parentA);
@@ -235,13 +245,14 @@ public class FarmingEvents {
             return;
         }
 
-        FarmAnimalData dataB = (event.getParentB() instanceof Animal parentB)
-                ? parentB.getData(ModAttachments.FARM_ANIMAL.get())
-                : null;
+        FarmAnimalData dataB = dataB2;
 
-        // Stressed parents produce slower-growing offspring
-        if (!dataA.isStressed() && (dataB == null || !dataB.isStressed())) {
-            child.setAge(-12000);
+        // FECUND trait halves growth time; stressed parents slow it down
+        boolean fecund = dataA.getExpressedTrait() == Trait.FECUND
+                || (dataB != null && dataB.getExpressedTrait() == Trait.FECUND);
+        boolean stressed = dataA.isStressed() || (dataB != null && dataB.isStressed());
+        if (!stressed) {
+            child.setAge(fecund ? -6000 : -12000);
         }
 
         if (dataB != null && child instanceof Animal childAnimal) {
@@ -256,22 +267,7 @@ public class FarmingEvents {
     // Helpers
     // -
 
-    private static boolean isNearFoodTrough(Animal animal) {
-        var dietTags = SurvivalConfig.getDietTags(animal);
-        return BlockPos.betweenClosedStream(
-                animal.blockPosition().offset(-5, -1, -5),
-                animal.blockPosition().offset(5, 1, 5)
-        ).filter(pos -> animal.level().getBlockState(pos).is(SurvivalBlocks.FOOD_TROUGH.get()))
-                .anyMatch(pos -> {
-                    if (!(animal.level().getBlockEntity(pos) instanceof FoodTroughBlockEntity trough)) return false;
-                    return trough.hasValidFood(dietTags);
-                });
-    }
-
     private static void syncToTracking(Animal animal, FarmAnimalData data) {
-        PacketDistributor.sendToPlayersTrackingEntity(animal, new FarmAnimalSyncPacket(
-                animal.getId(), data.getHunger(), data.getThirst(),
-                data.getWellFedTicks(), data.getStressTicks(), data.getOverfedTicks(),
-                data.getTameness(), data.getPanicTicks(), data.getAlleleA(), data.getAlleleB()));
+        PacketDistributor.sendToPlayersTrackingEntity(animal, new FarmAnimalSyncPacket(animal.getId(), data));
     }
 }

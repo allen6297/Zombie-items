@@ -2,6 +2,8 @@
   "replace": false,
   "entries": [
     "ks_survival:village_chest_feed_bag",
-    "ks_survival:village_chest_medicine"
+    "ks_survival:village_chest_medicine",
+    "ks_survival:zombie_drops_bandage",
+    "ks_survival:zombie_drops_can1"
   ]
 }

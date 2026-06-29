@@ -37,5 +37,25 @@
   "config.ks_survival.animalWaterNeeds": "Animal Water Needs",
   "config.ks_survival.animalWaterNeeds.tooltip": "Water consumed per drink per entity type in mB. Format: namespace:entity=amount",
   "config.ks_survival.animalBreedingSeasons": "Animal Breeding Seasons",
-  "config.ks_survival.animalBreedingSeasons.tooltip": "Seasons each animal can breed in. Domestic animals always breed. Format: namespace:entity=SPRING,SUMMER"
+  "config.ks_survival.animalBreedingSeasons.tooltip": "Seasons each animal can breed in. Domestic animals always breed. Format: namespace:entity=SPRING,SUMMER",
+
+  "item.ks_survival.splint": "Splint",
+
+  "item.ks_survival.can1": "Can [small]",
+  "item.ks_survival.can2": "Can [big]",
+  "item.ks_survival.bandage": "Bandage",
+  "item.ks_survival.zombie_knife": "Zombie Knife",
+
+  "config.ks_survival.bandageHealAmount": "Bandage Heal Amount",
+  "config.ks_survival.bandageHealAmount.tooltip": "How much health (in half-hearts) the bandage restores when applied.",
+  "config.ks_survival.bandageUseDuration": "Bandage Use Duration",
+  "config.ks_survival.bandageUseDuration.tooltip": "How long it takes to apply a bandage in ticks (20 ticks = 1 second).",
+  "config.ks_survival.can1Thirst": "Small Can Thirst",
+  "config.ks_survival.can1Thirst.tooltip": "Thirst restored by drinking the small can.",
+  "config.ks_survival.can1Quench": "Small Can Quench",
+  "config.ks_survival.can1Quench.tooltip": "Quench saturation value of the small can.",
+  "config.ks_survival.can2Thirst": "Big Can Thirst",
+  "config.ks_survival.can2Thirst.tooltip": "Thirst restored by drinking the big can.",
+  "config.ks_survival.can2Quench": "Big Can Quench",
+  "config.ks_survival.can2Quench.tooltip": "Quench saturation value of the big can."
 }

@@ -1,0 +1,29 @@
+{
+  "name": "Food Trough",
+  "category": "ks_survival:farming",
+  "icon": "ks_survival:food_trough",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Feeding Your Animals",
+      "text": "Animals need food to stay healthy. A $(l:ks_survival:farming/food_trough)Food Trough$() stocked with the right food keeps them fed automatically — they will walk to it when hungry."
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Crafting",
+      "recipe": "ks_survival:food_trough",
+      "text": "Place the trough near your animals. It holds 9 slots of food items."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Diet",
+      "text": "Each animal species has a configured diet. Cows and sheep eat $(l)vegetables and crops$(). Chickens eat $(l)seeds and berries$(). Pigs are more flexible — they eat vegetables, fruit, and crops. You can adjust diets in the mod config."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Hunger & Wellbeing",
+      "text": "An animal's hunger runs from 0 to 100. Below the stress threshold it becomes $(c)stressed$() and loses productivity. Above the well-fed threshold it gains a $(6)regeneration$() effect and accumulates $(6)productivity$(). Overfed animals slow down."
+    }
+  ]
+}

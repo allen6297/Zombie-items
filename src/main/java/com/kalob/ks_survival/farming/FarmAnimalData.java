@@ -1,9 +1,16 @@
 package com.kalob.ks_survival.farming;
 
+import com.kalob.ks_survival.farming.genetics.ClimateVariant;
 import com.kalob.ks_survival.farming.genetics.Coat;
+import com.kalob.ks_survival.farming.genetics.Gender;
+import com.kalob.ks_survival.farming.genetics.Pattern;
+import com.kalob.ks_survival.farming.genetics.Trait;
 import com.kalob.ks_survival.init.SurvivalConfig;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.RandomSource;
 
 public class FarmAnimalData {
@@ -23,9 +30,18 @@ public class FarmAnimalData {
             Codec.INT.optionalFieldOf("overfedTicks", 0).forGetter(d -> d.overfedTicks),
             Codec.INT.optionalFieldOf("tameness", 0).forGetter(d -> d.tameness),
             Codec.INT.optionalFieldOf("alleleA", 0).forGetter(d -> d.alleleA),
-            Codec.INT.optionalFieldOf("alleleB", 0).forGetter(d -> d.alleleB)
+            Codec.INT.optionalFieldOf("alleleB", 0).forGetter(d -> d.alleleB),
+            Codec.INT.optionalFieldOf("traitAlleleA", 0).forGetter(d -> d.traitAlleleA),
+            Codec.INT.optionalFieldOf("traitAlleleB", 0).forGetter(d -> d.traitAlleleB),
+            Codec.INT.optionalFieldOf("patternAlleleA", 0).forGetter(d -> d.patternAlleleA),
+            Codec.INT.optionalFieldOf("patternAlleleB", 0).forGetter(d -> d.patternAlleleB),
+            Codec.INT.optionalFieldOf("gender", 0).forGetter(d -> d.gender),
+            Codec.INT.optionalFieldOf("climateVariant", 0).forGetter(d -> d.climateVariant)
         ).apply(instance, FarmAnimalData::fromCodec)
     );
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, FarmAnimalData> STREAM_CODEC =
+            ByteBufCodecs.fromCodecWithRegistries(CODEC);
 
     private int hunger;
     private int thirst;
@@ -36,6 +52,12 @@ public class FarmAnimalData {
     private int panicTicks;
     private int alleleA;
     private int alleleB;
+    private int traitAlleleA;
+    private int traitAlleleB;
+    private int patternAlleleA;
+    private int patternAlleleB;
+    private int gender;
+    private int climateVariant;
 
     public FarmAnimalData() {
         this.hunger = MAX;
@@ -47,7 +69,10 @@ public class FarmAnimalData {
         this.panicTicks = 0;
     }
 
-    public static FarmAnimalData of(int hunger, int thirst, int wellFedTicks, int stressTicks, int overfedTicks, int tameness, int panicTicks, int alleleA, int alleleB) {
+    public static FarmAnimalData of(int hunger, int thirst, int wellFedTicks, int stressTicks, int overfedTicks,
+                                    int tameness, int panicTicks, int alleleA, int alleleB,
+                                    int traitAlleleA, int traitAlleleB, int patternAlleleA, int patternAlleleB,
+                                    int gender, int climateVariant) {
         FarmAnimalData d = new FarmAnimalData();
         d.hunger = hunger;
         d.thirst = thirst;
@@ -58,11 +83,21 @@ public class FarmAnimalData {
         d.panicTicks = panicTicks;
         d.alleleA = alleleA;
         d.alleleB = alleleB;
+        d.traitAlleleA = traitAlleleA;
+        d.traitAlleleB = traitAlleleB;
+        d.patternAlleleA = patternAlleleA;
+        d.patternAlleleB = patternAlleleB;
+        d.gender = gender;
+        d.climateVariant = climateVariant;
         return d;
     }
 
-    private static FarmAnimalData fromCodec(int hunger, int thirst, int wellFedTicks, int stressTicks, int overfedTicks, int tameness, int alleleA, int alleleB) {
-        return of(hunger, thirst, wellFedTicks, stressTicks, overfedTicks, tameness, 0, alleleA, alleleB);
+    private static FarmAnimalData fromCodec(int hunger, int thirst, int wellFedTicks, int stressTicks, int overfedTicks,
+                                            int tameness, int alleleA, int alleleB,
+                                            int traitAlleleA, int traitAlleleB, int patternAlleleA, int patternAlleleB,
+                                            int gender, int climateVariant) {
+        return of(hunger, thirst, wellFedTicks, stressTicks, overfedTicks, tameness, 0,
+                alleleA, alleleB, traitAlleleA, traitAlleleB, patternAlleleA, patternAlleleB, gender, climateVariant);
     }
 
     public int getHunger()       { return hunger; }
@@ -72,21 +107,60 @@ public class FarmAnimalData {
     public int getOverfedTicks() { return overfedTicks; }
     public int getTameness()     { return tameness; }
     public int getPanicTicks()   { return panicTicks; }
-    public int getAlleleA()       { return alleleA; }
-    public int getAlleleB()       { return alleleB; }
+    public int getAlleleA()        { return alleleA; }
+    public int getAlleleB()        { return alleleB; }
+    public int getTraitAlleleA()    { return traitAlleleA; }
+    public int getTraitAlleleB()    { return traitAlleleB; }
+    public int getPatternAlleleA()  { return patternAlleleA; }
+    public int getPatternAlleleB()  { return patternAlleleB; }
+    public int getGender()                       { return gender; }
+    public Gender getExpressedGender()           { return Gender.byId(gender); }
+    public int getClimateVariant()               { return climateVariant; }
+    public ClimateVariant getExpressedClimate()  { return ClimateVariant.byId(climateVariant); }
 
     public Coat getExpressedCoat() {
         return Coat.expressed(Coat.byId(alleleA), Coat.byId(alleleB));
     }
 
-    public void setRandomAlleles(RandomSource rng) {
-        this.alleleA = Coat.random(rng).id;
-        this.alleleB = Coat.random(rng).id;
+    public Trait getExpressedTrait() {
+        return Trait.expressed(Trait.byId(traitAlleleA), Trait.byId(traitAlleleB));
+    }
+
+    public Pattern getExpressedPattern() {
+        return Pattern.expressed(Pattern.byId(patternAlleleA), Pattern.byId(patternAlleleB));
+    }
+
+    public void setRandomAlleles(RandomSource rng, ClimateVariant climate) {
+        this.climateVariant = climate.id;
+        this.alleleA = Coat.random(rng, climate).id;
+        this.alleleB = Coat.random(rng, climate).id;
+        this.traitAlleleA = Trait.random(rng, climate).id;
+        this.traitAlleleB = Trait.random(rng, climate).id;
+        this.patternAlleleA = Pattern.random(rng, climate).id;
+        this.patternAlleleB = Pattern.random(rng, climate).id;
+        this.gender = Gender.random(rng).id;
     }
 
     public void inheritGenetics(FarmAnimalData parentA, FarmAnimalData parentB, RandomSource rng) {
-        this.alleleA = rng.nextBoolean() ? parentA.alleleA : parentA.alleleB;
-        this.alleleB = rng.nextBoolean() ? parentB.alleleA : parentB.alleleB;
+        float mutationChance = SurvivalConfig.MUTATION_CHANCE.get() / 100f;
+
+        // Coat
+        Coat coatA = rng.nextBoolean() ? Coat.byId(parentA.alleleA) : Coat.byId(parentA.alleleB);
+        Coat coatB = rng.nextBoolean() ? Coat.byId(parentB.alleleA) : Coat.byId(parentB.alleleB);
+        this.alleleA = (rng.nextFloat() < mutationChance) ? Coat.random(rng).id : coatA.id;
+        this.alleleB = (rng.nextFloat() < mutationChance) ? Coat.random(rng).id : coatB.id;
+
+        // Trait
+        Trait traitA = rng.nextBoolean() ? Trait.byId(parentA.traitAlleleA) : Trait.byId(parentA.traitAlleleB);
+        Trait traitB = rng.nextBoolean() ? Trait.byId(parentB.traitAlleleA) : Trait.byId(parentB.traitAlleleB);
+        this.traitAlleleA = (rng.nextFloat() < mutationChance) ? Trait.random(rng).id : traitA.id;
+        this.traitAlleleB = (rng.nextFloat() < mutationChance) ? Trait.random(rng).id : traitB.id;
+
+        // Pattern
+        Pattern patA = rng.nextBoolean() ? Pattern.byId(parentA.patternAlleleA) : Pattern.byId(parentA.patternAlleleB);
+        Pattern patB = rng.nextBoolean() ? Pattern.byId(parentB.patternAlleleA) : Pattern.byId(parentB.patternAlleleB);
+        this.patternAlleleA = (rng.nextFloat() < mutationChance) ? Pattern.random(rng).id : patA.id;
+        this.patternAlleleB = (rng.nextFloat() < mutationChance) ? Pattern.random(rng).id : patB.id;
     }
 
     public boolean isPanicking() { return panicTicks > 0; }
@@ -148,11 +222,13 @@ public class FarmAnimalData {
     // At larger tickIntervals the drain scales up so real-time depletion stays constant.
     private static final int BASE_INTERVAL = 200;
 
-    public void tick(boolean nearWater, boolean nearFeedingTrough, int extraHungerDrain, int extraThirstDrain, boolean safetyBonus) {
+    public void tick(boolean nearWater, int extraHungerDrain, int extraThirstDrain, boolean safetyBonus) {
         if (panicTicks > 0) panicTicks--;
         int drain = Math.max(1, tickInterval() / BASE_INTERVAL);
-        if (nearFeedingTrough) { if (hunger < MAX) hunger = Math.min(MAX, hunger + drain); }
-        else { hunger = Math.max(0, hunger - drain - extraHungerDrain); }
+        // GLUTTONY animals drain (and eat) twice as fast
+        int hungerDrain = getExpressedTrait() == Trait.GLUTTONY ? drain * 2 : drain;
+        hunger = Math.max(0, hunger - hungerDrain - extraHungerDrain);
+        // Thirst restored passively by natural water (rivers/ponds) or by SeekWaterTroughGoal
         if (nearWater) { if (thirst < MAX) thirst = Math.min(MAX, thirst + drain); }
         else { thirst = Math.max(0, thirst - drain - extraThirstDrain); }
 
@@ -186,7 +262,10 @@ public class FarmAnimalData {
     }
 
     public boolean isSick() {
-        return stressTicks >= SurvivalConfig.SICKNESS_THRESHOLD.get();
+        // HARDY animals can withstand twice as many stress ticks before getting sick
+        int threshold = SurvivalConfig.SICKNESS_THRESHOLD.get();
+        if (getExpressedTrait() == Trait.HARDY) threshold *= 2;
+        return stressTicks >= threshold;
     }
 
     public boolean isOverfed() {

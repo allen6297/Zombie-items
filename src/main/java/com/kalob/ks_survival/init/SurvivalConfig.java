@@ -43,6 +43,16 @@ public class SurvivalConfig {
             .defineInRange("productivityCapTicks", 2000, 100, 100000);
 
     // Crowding
+    public static final ModConfigSpec.IntValue MUTATION_CHANCE = BUILDER
+            .comment("Percent chance (0-100) that a genetics allele mutates to a random value on birth")
+            .translation("config.ks_survival.mutationChance")
+            .defineInRange("mutationChance", 5, 0, 100);
+
+    public static final ModConfigSpec.IntValue FLEE_RADIUS = BUILDER
+            .comment("Distance (blocks) at which wild/panicking animals flee nearby players")
+            .translation("config.ks_survival.fleeRadius")
+            .defineInRange("fleeRadius", 5, 1, 32);
+
     public static final ModConfigSpec.IntValue CROWDING_LIMIT = BUILDER
             .comment("Max animals of the same type within radius before crowding stress applies")
             .translation("config.ks_survival.crowdingLimit")
@@ -114,6 +124,38 @@ public class SurvivalConfig {
                     "minecraft:sheep=200",
                     "minecraft:goat=150"
             )), entry -> entry instanceof String s && s.matches("[a-z0-9_.-]+:[a-z0-9_./-]+=\\d+"));
+
+    // Bandage
+    public static final ModConfigSpec.DoubleValue BANDAGE_HEAL_AMOUNT = BUILDER
+            .comment("How much health the bandage restores")
+            .translation("config.ks_survival.bandageHealAmount")
+            .defineInRange("bandageHealAmount", 6.0, 0.5, 20.0);
+
+    public static final ModConfigSpec.IntValue BANDAGE_USE_DURATION = BUILDER
+            .comment("How long it takes to apply a bandage in ticks (20 ticks = 1 second)")
+            .translation("config.ks_survival.bandageUseDuration")
+            .defineInRange("bandageUseDuration", 60, 20, 200);
+
+    // Cans
+    public static final ModConfigSpec.IntValue CAN1_THIRST = BUILDER
+            .comment("Thirst restored by the small can")
+            .translation("config.ks_survival.can1Thirst")
+            .defineInRange("can1Thirst", 3, 1, 10);
+
+    public static final ModConfigSpec.IntValue CAN1_QUENCH = BUILDER
+            .comment("Quench value of the small can")
+            .translation("config.ks_survival.can1Quench")
+            .defineInRange("can1Quench", 1, 0, 5);
+
+    public static final ModConfigSpec.IntValue CAN2_THIRST = BUILDER
+            .comment("Thirst restored by the big can")
+            .translation("config.ks_survival.can2Thirst")
+            .defineInRange("can2Thirst", 6, 1, 10);
+
+    public static final ModConfigSpec.IntValue CAN2_QUENCH = BUILDER
+            .comment("Quench value of the big can")
+            .translation("config.ks_survival.can2Quench")
+            .defineInRange("can2Quench", 2, 0, 5);
 
     public static final ModConfigSpec SPEC = BUILDER.build();
 

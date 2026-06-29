@@ -2,6 +2,7 @@ package com.kalob.ks_survival.init;
 
 import com.kalob.ks_survival.KsSurvival;
 import com.kalob.ks_survival.farming.FarmAnimalData;
+import com.kalob.ks_survival.health.BodyPartData;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -17,5 +18,11 @@ public class ModAttachments {
         ATTACHMENT_TYPES.register("farm_animal",
             () -> AttachmentType.builder(FarmAnimalData::new)
                 .serialize(FarmAnimalData.CODEC)
+                .build());
+
+    public static final Supplier<AttachmentType<BodyPartData>> BODY_PARTS =
+        ATTACHMENT_TYPES.register("body_parts",
+            () -> AttachmentType.builder(BodyPartData::new)
+                .serialize(BodyPartData.CODEC)
                 .build());
 }
