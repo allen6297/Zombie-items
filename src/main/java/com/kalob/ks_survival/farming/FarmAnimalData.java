@@ -36,7 +36,8 @@ public class FarmAnimalData {
             Codec.INT.optionalFieldOf("patternAlleleA", 0).forGetter(d -> d.patternAlleleA),
             Codec.INT.optionalFieldOf("patternAlleleB", 0).forGetter(d -> d.patternAlleleB),
             Codec.INT.optionalFieldOf("gender", 0).forGetter(d -> d.gender),
-            Codec.INT.optionalFieldOf("climateVariant", 0).forGetter(d -> d.climateVariant)
+            Codec.INT.optionalFieldOf("climateVariant", 0).forGetter(d -> d.climateVariant),
+            Codec.BOOL.optionalFieldOf("geneticsInitialized", false).forGetter(d -> d.geneticsInitialized)
         ).apply(instance, FarmAnimalData::fromCodec)
     );
 
@@ -58,6 +59,7 @@ public class FarmAnimalData {
     private int patternAlleleB;
     private int gender;
     private int climateVariant;
+    private boolean geneticsInitialized;
 
     public FarmAnimalData() {
         this.hunger = MAX;
@@ -67,12 +69,13 @@ public class FarmAnimalData {
         this.overfedTicks = 0;
         this.tameness = 0;
         this.panicTicks = 0;
+        this.geneticsInitialized = false;
     }
 
     public static FarmAnimalData of(int hunger, int thirst, int wellFedTicks, int stressTicks, int overfedTicks,
                                     int tameness, int panicTicks, int alleleA, int alleleB,
                                     int traitAlleleA, int traitAlleleB, int patternAlleleA, int patternAlleleB,
-                                    int gender, int climateVariant) {
+                                    int gender, int climateVariant, boolean geneticsInitialized) {
         FarmAnimalData d = new FarmAnimalData();
         d.hunger = hunger;
         d.thirst = thirst;
@@ -89,15 +92,17 @@ public class FarmAnimalData {
         d.patternAlleleB = patternAlleleB;
         d.gender = gender;
         d.climateVariant = climateVariant;
+        d.geneticsInitialized = geneticsInitialized;
         return d;
     }
 
     private static FarmAnimalData fromCodec(int hunger, int thirst, int wellFedTicks, int stressTicks, int overfedTicks,
                                             int tameness, int alleleA, int alleleB,
                                             int traitAlleleA, int traitAlleleB, int patternAlleleA, int patternAlleleB,
-                                            int gender, int climateVariant) {
+                                            int gender, int climateVariant, boolean geneticsInitialized) {
         return of(hunger, thirst, wellFedTicks, stressTicks, overfedTicks, tameness, 0,
-                alleleA, alleleB, traitAlleleA, traitAlleleB, patternAlleleA, patternAlleleB, gender, climateVariant);
+                alleleA, alleleB, traitAlleleA, traitAlleleB, patternAlleleA, patternAlleleB, gender,
+                climateVariant, geneticsInitialized);
     }
 
     public int getHunger()       { return hunger; }
@@ -117,6 +122,18 @@ public class FarmAnimalData {
     public Gender getExpressedGender()           { return Gender.byId(gender); }
     public int getClimateVariant()               { return climateVariant; }
     public ClimateVariant getExpressedClimate()  { return ClimateVariant.byId(climateVariant); }
+    public boolean hasInitializedGenetics()      { return geneticsInitialized; }
+
+    public boolean hasStoredGenetics() {
+        return alleleA != 0 || alleleB != 0
+                || traitAlleleA != 0 || traitAlleleB != 0
+                || patternAlleleA != 0 || patternAlleleB != 0
+                || gender != 0 || climateVariant != 0;
+    }
+
+    public void markGeneticsInitialized() {
+        this.geneticsInitialized = true;
+    }
 
     public Coat getExpressedCoat() {
         return Coat.expressed(Coat.byId(alleleA), Coat.byId(alleleB));
@@ -139,6 +156,7 @@ public class FarmAnimalData {
         this.patternAlleleA = Pattern.random(rng, climate).id;
         this.patternAlleleB = Pattern.random(rng, climate).id;
         this.gender = Gender.random(rng).id;
+        this.geneticsInitialized = true;
     }
 
     public void inheritGenetics(FarmAnimalData parentA, FarmAnimalData parentB, RandomSource rng) {
@@ -161,6 +179,9 @@ public class FarmAnimalData {
         Pattern patB = rng.nextBoolean() ? Pattern.byId(parentB.patternAlleleA) : Pattern.byId(parentB.patternAlleleB);
         this.patternAlleleA = (rng.nextFloat() < mutationChance) ? Pattern.random(rng).id : patA.id;
         this.patternAlleleB = (rng.nextFloat() < mutationChance) ? Pattern.random(rng).id : patB.id;
+        this.gender = Gender.random(rng).id;
+        this.climateVariant = parentA.climateVariant;
+        this.geneticsInitialized = true;
     }
 
     public boolean isPanicking() { return panicTicks > 0; }
@@ -172,8 +193,17 @@ public class FarmAnimalData {
         panic(Math.max(1, gameTicks / tickInterval()));
     }
 
-    public void feed()  { this.hunger = MAX; }
-    public void water() { this.thirst = MAX; }
+    public boolean feed()  {
+        if (hunger >= MAX) return false;
+        this.hunger = MAX;
+        return true;
+    }
+
+    public boolean water() {
+        if (thirst >= MAX) return false;
+        this.thirst = MAX;
+        return true;
+    }
 
     public void cure() {
         this.stressTicks = 0;
@@ -224,6 +254,8 @@ public class FarmAnimalData {
 
     public void tick(boolean nearWater, int extraHungerDrain, int extraThirstDrain, boolean safetyBonus) {
         if (panicTicks > 0) panicTicks--;
+        int elapsedTicks = tickInterval();
+        boolean fullyFedBeforeDrain = hunger >= MAX && thirst >= MAX;
         int drain = Math.max(1, tickInterval() / BASE_INTERVAL);
         // GLUTTONY animals drain (and eat) twice as fast
         int hungerDrain = getExpressedTrait() == Trait.GLUTTONY ? drain * 2 : drain;
@@ -233,12 +265,16 @@ public class FarmAnimalData {
         else { thirst = Math.max(0, thirst - drain - extraThirstDrain); }
 
         if (isWellFed()) {
-            wellFedTicks++;
+            wellFedTicks += elapsedTicks;
             stressTicks = 0;
-            overfedTicks++;
+            if (fullyFedBeforeDrain) {
+                overfedTicks += elapsedTicks;
+            } else {
+                overfedTicks = 0;
+            }
         } else if (isStressed() && !safetyBonus) {
             wellFedTicks = 0;
-            stressTicks++;
+            stressTicks += elapsedTicks;
             overfedTicks = 0;
         } else {
             overfedTicks = 0;

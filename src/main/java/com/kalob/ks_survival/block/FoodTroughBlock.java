@@ -41,6 +41,18 @@ public class FoodTroughBlock extends BaseEntityBlock {
     }
 
     @Override
+    protected void onRemove(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos,
+                            @NotNull BlockState newState, boolean movedByPiston) {
+        if (!state.is(newState.getBlock())) {
+            if (level.getBlockEntity(pos) instanceof FoodTroughBlockEntity trough) {
+                trough.dropContents();
+                level.updateNeighbourForOutputSignal(pos, this);
+            }
+        }
+        super.onRemove(state, level, pos, newState, movedByPiston);
+    }
+
+    @Override
     protected @NotNull ItemInteractionResult useItemOn(@NotNull ItemStack stack, @NotNull BlockState state,
                                                        @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player,
                                                        @NotNull InteractionHand hand, @NotNull BlockHitResult hit) {

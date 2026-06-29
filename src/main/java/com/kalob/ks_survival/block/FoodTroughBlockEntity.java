@@ -12,6 +12,7 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -49,6 +50,17 @@ public class FoodTroughBlockEntity extends BlockEntity implements MenuProvider {
 
     public IItemHandler getItemHandler() {
         return inventory;
+    }
+
+    public void dropContents() {
+        if (level == null) return;
+        for (int i = 0; i < SLOTS; i++) {
+            ItemStack stack = inventory.getStackInSlot(i);
+            if (!stack.isEmpty()) {
+                Containers.dropItemStack(level, worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), stack);
+                inventory.setStackInSlot(i, ItemStack.EMPTY);
+            }
+        }
     }
 
     @Override

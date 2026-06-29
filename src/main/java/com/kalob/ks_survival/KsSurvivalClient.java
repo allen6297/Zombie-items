@@ -12,12 +12,14 @@ import net.minecraft.world.entity.animal.Animal;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.Objects;
 
@@ -30,6 +32,7 @@ public class KsSurvivalClient {
         bus.addListener(this::onRegisterMenuScreens);
         bus.addListener(this::onAddRenderLayers);
         bus.addListener(this::onRegisterGuiLayers);
+        NeoForge.EVENT_BUS.addListener(this::onRenderGuiLayer);
     }
 
     private void onRegisterMenuScreens(RegisterMenuScreensEvent event) {
@@ -40,6 +43,12 @@ public class KsSurvivalClient {
         event.registerAbove(VanillaGuiLayers.CROSSHAIR,
                 net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("ks_survival", "health_hud"),
                 HealthHudOverlay::onRenderHud);
+    }
+
+    private void onRenderGuiLayer(RenderGuiLayerEvent.Pre event) {
+        if (event.getName().equals(VanillaGuiLayers.PLAYER_HEALTH)) {
+            event.setCanceled(true);
+        }
     }
 
     @SuppressWarnings("unchecked")

@@ -28,6 +28,8 @@ public class FeedBagItem extends Item {
         if (animal.level().isClientSide()) return InteractionResult.SUCCESS;
 
         FarmAnimalData data = animal.getData(ModAttachments.FARM_ANIMAL.get());
+        if (data.getHunger() >= FarmAnimalData.MAX) return InteractionResult.PASS;
+
         data.feed();
         animal.setData(ModAttachments.FARM_ANIMAL.get(), data);
         PacketDistributor.sendToPlayersTrackingEntity(animal, new FarmAnimalSyncPacket(animal.getId(), data));

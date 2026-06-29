@@ -22,6 +22,7 @@ public class HealthHudOverlay {
 
     // Wound icons — all confirmed to render in Minecraft's font
     private static final String ICON_BLEED   = "§c❤";  // red heart  → bleeding
+    private static final String ICON_SEVERE_BLEED = "§4❤"; // dark red heart → severe bleeding
     private static final String ICON_FRACTURE = "§6✖"; // orange ×   → broken bone
     private static final String ICON_INFECT  = "§2☣";  // dark green biohazard → infection
 
@@ -52,22 +53,42 @@ public class HealthHudOverlay {
         for (int i = 0; i < PARTS.length; i++) {
             drawRow(gfx, mc, data, PARTS[i], LABELS[i], px + 4, py + 2 + i * ROW_H);
         }
+
+        if (data.isMovementLocked()) {
+            drawMovementLockCountdown(gfx, mc, data);
+        }
+    }
+
+    private static void drawMovementLockCountdown(GuiGraphics gfx, Minecraft mc, BodyPartData data) {
+        int seconds = Math.max(1, (data.getMovementLockTicks() + 19) / 20);
+        String text = "FALL STUN  -- " + seconds + " --";
+        int x = (mc.getWindow().getGuiScaledWidth() - mc.font.width(text)) / 2;
+        int y = mc.getWindow().getGuiScaledHeight() / 2 + 28;
+
+        gfx.fill(x - 6, y - 4, x + mc.font.width(text) + 6, y + 12, 0xAA000000);
+        gfx.drawString(mc.font, text, x, y, 0xFFE53935, false);
     }
 
     private static void drawRow(GuiGraphics gfx, Minecraft mc, BodyPartData data,
                                 BodyPart part, String label, int x, int y) {
         int   hp    = data.getHp(part);
         int   maxHp = data.getMaxHp(part);
-        float frac  = maxHp > 0 ? (float) hp / maxHp : 0f;
+        float frac  = maxHp > 0 ? Math.min(1f, Math.max(0f, (float) hp / maxHp)) : 0f;
+        boolean flashing = data.getDamageFlashTicks() > 0 && data.getLastDamagedPart() == part;
 
         // Label colour: white when healthy, dim when crippled
-        int labelColor = hp <= 0 ? 0xFF666666 : 0xFFCCCCCC;
+        int labelColor = hp <= 0 ? 0xFF666666 : flashing ? 0xFFFFD6D6 : 0xFFCCCCCC;
 
         // Wound icons after label
         StringBuilder lbl = new StringBuilder(label);
         if (data.hasWound(part, Wound.BLEEDING))  lbl.append(" ").append(ICON_BLEED);
+        if (data.hasWound(part, Wound.SEVERE_BLEEDING)) lbl.append(" ").append(ICON_SEVERE_BLEED);
         if (data.hasWound(part, Wound.FRACTURE))  lbl.append(" ").append(ICON_FRACTURE);
         if (data.hasWound(part, Wound.INFECTION)) lbl.append(" ").append(ICON_INFECT);
+
+        if (flashing) {
+            gfx.fill(x - 2, y - 1, x + BAR_W + 2, y + ROW_H - 1, 0x55E53935);
+        }
 
         gfx.drawString(mc.font, lbl.toString(), x, y, labelColor, false);
 

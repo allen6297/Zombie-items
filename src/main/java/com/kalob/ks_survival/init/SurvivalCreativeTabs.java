@@ -27,6 +27,7 @@ public class SurvivalCreativeTabs {
                         output.accept(SurvivalItems.WATER_FLASK.get());
                         output.accept(SurvivalItems.WATER_FLASK_FILLED.get());
                         output.accept(SurvivalItems.MEDICINE.get());
+                        output.accept(SurvivalItems.TRAUMA_KIT.get());
                         output.accept(SurvivalItems.WATER_TROUGH.get());
                         output.accept(SurvivalItems.FOOD_TROUGH.get());
                         output.accept(SurvivalItems.CAN1.get());

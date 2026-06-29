@@ -5,6 +5,7 @@ import com.kalob.ks_survival.item.BandageItem;
 import com.kalob.ks_survival.item.FeedBagItem;
 import com.kalob.ks_survival.item.MedicineItem;
 import com.kalob.ks_survival.item.SplintItem;
+import com.kalob.ks_survival.item.TraumaKitItem;
 import com.kalob.ks_survival.item.WaterFlaskFilledItem;
 import com.kalob.ks_survival.item.WaterFlaskItem;
 import com.kalob.ks_survival.item.ZombieKnifeItem;
@@ -35,6 +36,9 @@ public class SurvivalItems {
 
     public static final DeferredItem<Item> SPLINT = ITEMS.register("splint",
             () -> new SplintItem(new Item.Properties().stacksTo(8)));
+
+    public static final DeferredItem<Item> TRAUMA_KIT = ITEMS.register("trauma_kit",
+            () -> new TraumaKitItem(new Item.Properties().stacksTo(4)));
 
     public static final DeferredItem<Item> CAN1 = ITEMS.register("can1",
             () -> new Item(new Item.Properties().food(new FoodProperties.Builder()

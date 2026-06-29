@@ -67,7 +67,7 @@ public class SurvivalConfig {
     public static final ModConfigSpec.IntValue SICKNESS_THRESHOLD = BUILDER
             .comment("Consecutive stressed ticks before an animal becomes sick")
             .translation("config.ks_survival.sicknessThreshold")
-            .defineInRange("sicknessThreshold", 10, 1, 1000);
+            .defineInRange("sicknessThreshold", 2000, 20, 100000);
 
     // Tameness
     public static final ModConfigSpec.IntValue TAMENESS_WILD_THRESHOLD = BUILDER
@@ -135,6 +135,107 @@ public class SurvivalConfig {
             .comment("How long it takes to apply a bandage in ticks (20 ticks = 1 second)")
             .translation("config.ks_survival.bandageUseDuration")
             .defineInRange("bandageUseDuration", 60, 20, 200);
+
+    // Body-part health
+    public static final ModConfigSpec.IntValue BLEED_INTERVAL = BUILDER
+            .comment("How often bleeding damage is applied, in ticks (20 ticks = 1 second)")
+            .translation("config.ks_survival.bleedInterval")
+            .defineInRange("bleedInterval", 40, 10, 1200);
+
+    public static final ModConfigSpec.DoubleValue BLEED_DAMAGE = BUILDER
+            .comment("Vanilla health damage dealt by normal bleeding each bleed interval")
+            .translation("config.ks_survival.bleedDamage")
+            .defineInRange("bleedDamage", 1.0, 0.0, 20.0);
+
+    public static final ModConfigSpec.DoubleValue SEVERE_BLEED_DAMAGE = BUILDER
+            .comment("Vanilla health damage dealt by severe bleeding each bleed interval")
+            .translation("config.ks_survival.severeBleedDamage")
+            .defineInRange("severeBleedDamage", 2.0, 0.0, 20.0);
+
+    public static final ModConfigSpec.DoubleValue HEAD_DAMAGE_MULTIPLIER = BUILDER
+            .comment("Multiplier applied to vanilla damage when the routed body part is the head")
+            .translation("config.ks_survival.headDamageMultiplier")
+            .defineInRange("headDamageMultiplier", 2.0, 1.0, 10.0);
+
+    public static final ModConfigSpec.IntValue FALL_MOVEMENT_LOCK_TICKS = BUILDER
+            .comment("Movement lock duration after taking fall damage, in ticks")
+            .translation("config.ks_survival.fallMovementLockTicks")
+            .defineInRange("fallMovementLockTicks", 15 * 20, 0, 20 * 120);
+
+    public static final ModConfigSpec.IntValue NATURAL_HEAL_INTERVAL = BUILDER
+            .comment("How often natural body-part recovery runs, in ticks")
+            .translation("config.ks_survival.naturalHealInterval")
+            .defineInRange("naturalHealInterval", 20 * 30, 20, 20 * 600);
+
+    public static final ModConfigSpec.IntValue NATURAL_HEAL_AMOUNT = BUILDER
+            .comment("Body-part HP restored by each natural recovery tick")
+            .translation("config.ks_survival.naturalHealAmount")
+            .defineInRange("naturalHealAmount", 1, 0, 20);
+
+    public static final ModConfigSpec.IntValue NATURAL_HEAL_MIN_FOOD = BUILDER
+            .comment("Minimum food level required for natural body-part recovery")
+            .translation("config.ks_survival.naturalHealMinFood")
+            .defineInRange("naturalHealMinFood", 16, 0, 20);
+
+    public static final ModConfigSpec.IntValue HEAD_MAX_HP = BUILDER
+            .comment("Maximum body-part HP for the head")
+            .translation("config.ks_survival.headMaxHp")
+            .defineInRange("headMaxHp", 10, 1, 100);
+
+    public static final ModConfigSpec.IntValue TORSO_MAX_HP = BUILDER
+            .comment("Maximum body-part HP for the torso")
+            .translation("config.ks_survival.torsoMaxHp")
+            .defineInRange("torsoMaxHp", 30, 1, 200);
+
+    public static final ModConfigSpec.IntValue ARM_MAX_HP = BUILDER
+            .comment("Maximum body-part HP for each arm")
+            .translation("config.ks_survival.armMaxHp")
+            .defineInRange("armMaxHp", 15, 1, 100);
+
+    public static final ModConfigSpec.IntValue LEG_MAX_HP = BUILDER
+            .comment("Maximum body-part HP for each leg")
+            .translation("config.ks_survival.legMaxHp")
+            .defineInRange("legMaxHp", 20, 1, 120);
+
+    public static final ModConfigSpec.IntValue TRAUMA_KIT_USE_DURATION = BUILDER
+            .comment("How long it takes to apply a trauma kit in ticks")
+            .translation("config.ks_survival.traumaKitUseDuration")
+            .defineInRange("traumaKitUseDuration", 120, 20, 600);
+
+    public static final ModConfigSpec.IntValue TRAUMA_KIT_HEAL_AMOUNT = BUILDER
+            .comment("Body-part HP restored to all parts by a trauma kit")
+            .translation("config.ks_survival.traumaKitHealAmount")
+            .defineInRange("traumaKitHealAmount", 10, 1, 100);
+
+    public static final ModConfigSpec.DoubleValue BODY_ARMOR_DAMAGE_MULTIPLIER = BUILDER
+            .comment("Multiplier applied to body-part damage when matching armor is equipped")
+            .translation("config.ks_survival.bodyArmorDamageMultiplier")
+            .defineInRange("bodyArmorDamageMultiplier", 0.65, 0.0, 1.0);
+
+    public static final ModConfigSpec.DoubleValue BODY_ARMOR_DURABILITY_DAMAGE_RATIO = BUILDER
+            .comment("How much durability matching armor loses relative to body-part damage")
+            .translation("config.ks_survival.bodyArmorDurabilityDamageRatio")
+            .defineInRange("bodyArmorDurabilityDamageRatio", 0.5, 0.0, 5.0);
+
+    public static final ModConfigSpec.IntValue PAIN_SHOCK_CONFUSION_TICKS = BUILDER
+            .comment("Nausea duration after a body part drops to critical HP, in ticks")
+            .translation("config.ks_survival.painShockConfusionTicks")
+            .defineInRange("painShockConfusionTicks", 80, 0, 1200);
+
+    public static final ModConfigSpec.IntValue PAIN_SHOCK_DARKNESS_TICKS = BUILDER
+            .comment("Darkness duration after a body part drops to critical HP, in ticks")
+            .translation("config.ks_survival.painShockDarknessTicks")
+            .defineInRange("painShockDarknessTicks", 40, 0, 1200);
+
+    public static final ModConfigSpec.DoubleValue DOMESTIC_ANIMAL_KICK_CHANCE = BUILDER
+            .comment("Chance that a domestic tracked animal kicks the player when hurt")
+            .translation("config.ks_survival.domesticAnimalKickChance")
+            .defineInRange("domesticAnimalKickChance", 0.35, 0.0, 1.0);
+
+    public static final ModConfigSpec.IntValue DOMESTIC_ANIMAL_KICK_DAMAGE = BUILDER
+            .comment("Body-part damage dealt to a player's leg by domestic animal retaliation")
+            .translation("config.ks_survival.domesticAnimalKickDamage")
+            .defineInRange("domesticAnimalKickDamage", 4, 0, 50);
 
     // Cans
     public static final ModConfigSpec.IntValue CAN1_THIRST = BUILDER

@@ -34,8 +34,7 @@ public class AnimalAppendageLayer<T extends Animal, M extends EntityModel<T>> ex
                        float ageInTicks, float netHeadYaw, float headPitch) {
         if (!entity.hasData(ModAttachments.FARM_ANIMAL.get())) return;
         FarmAnimalData data = entity.getData(ModAttachments.FARM_ANIMAL.get());
-        // DEBUG: force COLD to verify geometry — remove once positions are tuned
-        ClimateVariant climate = ClimateVariant.COLD; // data.getExpressedClimate();
+        ClimateVariant climate = data.getExpressedClimate();
         if (climate == ClimateVariant.TEMPERATE) return;
 
         ModelPart appendage = AppendageModels.get(entity.getType(), climate);

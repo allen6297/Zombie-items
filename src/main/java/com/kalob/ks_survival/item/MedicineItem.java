@@ -1,6 +1,7 @@
 package com.kalob.ks_survival.item;
 
 import com.kalob.ks_survival.farming.FarmAnimalData;
+import com.kalob.ks_survival.farming.FarmAnimalSyncPacket;
 import com.kalob.ks_survival.health.HealingAction;
 import com.kalob.ks_survival.health.Wound;
 import com.kalob.ks_survival.init.ModAttachments;
@@ -8,6 +9,7 @@ import com.kalob.ks_survival.init.SurvivalConfig;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 public class MedicineItem extends BodyHealingItem {
 
@@ -39,6 +41,7 @@ public class MedicineItem extends BodyHealingItem {
 
         data.cure();
         animal.setData(ModAttachments.FARM_ANIMAL.get(), data);
+        PacketDistributor.sendToPlayersTrackingEntity(animal, new FarmAnimalSyncPacket(animal.getId(), data));
 
         if (!event.getEntity().getAbilities().instabuild) held.shrink(1);
         event.setCanceled(true);

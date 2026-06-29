@@ -7,11 +7,15 @@ import com.kalob.ks_survival.farming.genetics.Trait;
 import com.kalob.ks_survival.farming.goal.FollowHerdGoal;
 import com.kalob.ks_survival.farming.goal.SeekFoodTroughGoal;
 import com.kalob.ks_survival.farming.goal.SeekWaterTroughGoal;
+import com.kalob.ks_survival.health.BodyPart;
+import com.kalob.ks_survival.health.HealthEvents;
+import com.kalob.ks_survival.health.Wound;
 import com.kalob.ks_survival.init.ModAttachments;
 import com.kalob.ks_survival.init.SurvivalConfig;
 import com.kalob.ks_survival.item.MedicineItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -47,11 +51,15 @@ public class FarmingEvents {
         animal.goalSelector.addGoal(4, new SeekFoodTroughGoal(animal, 16, 1.0));
         animal.goalSelector.addGoal(6, new FollowHerdGoal(animal, 1.0, 12, 4));
 
-        // Only assign genetics on first spawn, not on chunk load
-        if (!event.loadedFromDisk()) {
+        // Only assign genetics when the attachment has not already been populated
+        // by breeding inheritance or persisted world data.
+        FarmAnimalData data = animal.getData(ModAttachments.FARM_ANIMAL.get());
+        if (!data.hasInitializedGenetics() && data.hasStoredGenetics()) {
+            data.markGeneticsInitialized();
+            animal.setData(ModAttachments.FARM_ANIMAL.get(), data);
+        } else if (!data.hasInitializedGenetics()) {
             ClimateVariant climate = ClimateVariant.fromBiome(
                     animal.level().getBiome(animal.blockPosition()));
-            FarmAnimalData data = animal.getData(ModAttachments.FARM_ANIMAL.get());
             data.setRandomAlleles(animal.level().getRandom(), climate);
             animal.setData(ModAttachments.FARM_ANIMAL.get(), data);
         }
@@ -198,7 +206,7 @@ public class FarmingEvents {
         if (event.getEntity().level().isClientSide()) return;
         if (!(event.getEntity() instanceof Animal animal)) return;
         if (!SurvivalConfig.isTrackedAnimal(animal)) return;
-        if (!(event.getSource().getEntity() instanceof Player)) return;
+        if (!(event.getSource().getEntity() instanceof Player player)) return;
 
         FarmAnimalData data = animal.getData(ModAttachments.FARM_ANIMAL.get());
         if (!data.isDomestic()) return;
@@ -207,6 +215,13 @@ public class FarmingEvents {
         data.panicFor(600); // 30 seconds
         animal.setData(ModAttachments.FARM_ANIMAL.get(), data);
         syncToTracking(animal, data);
+
+        if (player instanceof ServerPlayer serverPlayer
+                && SurvivalConfig.DOMESTIC_ANIMAL_KICK_DAMAGE.get() > 0
+                && animal.getRandom().nextFloat() < SurvivalConfig.DOMESTIC_ANIMAL_KICK_CHANCE.get()) {
+            BodyPart leg = animal.getRandom().nextBoolean() ? BodyPart.LEFT_LEG : BodyPart.RIGHT_LEG;
+            HealthEvents.damagePlayerBodyPart(serverPlayer, leg, SurvivalConfig.DOMESTIC_ANIMAL_KICK_DAMAGE.get(), Wound.FRACTURE);
+        }
     }
 
     // -

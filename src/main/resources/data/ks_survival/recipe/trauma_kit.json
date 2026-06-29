@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "BSB",
+    "MGM",
+    "BWB"
+  ],
+  "key": {
+    "B": { "item": "ks_survival:bandage" },
+    "S": { "item": "ks_survival:splint" },
+    "M": { "item": "ks_survival:medicine" },
+    "G": { "item": "minecraft:golden_carrot" },
+    "W": { "item": "minecraft:wheat" }
+  },
+  "result": {
+    "id": "ks_survival:trauma_kit",
+    "count": 1
+  }
+}

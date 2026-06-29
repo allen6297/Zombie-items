@@ -29,6 +29,8 @@ public class WaterFlaskFilledItem extends Item {
         if (animal.level().isClientSide()) return InteractionResult.SUCCESS;
 
         FarmAnimalData data = animal.getData(ModAttachments.FARM_ANIMAL.get());
+        if (data.getThirst() >= FarmAnimalData.MAX) return InteractionResult.PASS;
+
         data.water();
         animal.setData(ModAttachments.FARM_ANIMAL.get(), data);
         PacketDistributor.sendToPlayersTrackingEntity(animal, new FarmAnimalSyncPacket(animal.getId(), data));

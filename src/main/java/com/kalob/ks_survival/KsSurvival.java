@@ -3,6 +3,7 @@ package com.kalob.ks_survival;
 import com.kalob.ks_survival.farming.FarmAnimalSyncPacket;
 import com.kalob.ks_survival.farming.FarmingEvents;
 import com.kalob.ks_survival.health.BodyPartSyncPacket;
+import com.kalob.ks_survival.health.HealthDebugCommands;
 import com.kalob.ks_survival.health.HealthEvents;
 import com.kalob.ks_survival.init.ModAttachments;
 import com.kalob.ks_survival.init.SurvivalBlockEntities;
@@ -39,6 +40,7 @@ public class KsSurvival {
         SurvivalCreativeTabs.CREATIVE_MODE_TABS.register(modEventBus);
         NeoForge.EVENT_BUS.register(FarmingEvents.class);
         NeoForge.EVENT_BUS.register(HealthEvents.class);
+        NeoForge.EVENT_BUS.register(HealthDebugCommands.class);
         if (ModList.get().isLoaded("thirst")) {
             NeoForge.EVENT_BUS.register(SurvivalThirstCompat.class);
         }

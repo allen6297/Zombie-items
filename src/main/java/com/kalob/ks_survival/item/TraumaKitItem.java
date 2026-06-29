@@ -4,20 +4,20 @@ import com.kalob.ks_survival.health.HealingAction;
 import com.kalob.ks_survival.health.Wound;
 import com.kalob.ks_survival.init.SurvivalConfig;
 
-public class BandageItem extends BodyHealingItem {
+public class TraumaKitItem extends BodyHealingItem {
 
-    public BandageItem(Properties properties) {
+    public TraumaKitItem(Properties properties) {
         super(properties);
     }
 
     @Override
     public HealingAction getAction() {
-        return HealingAction.builder(SurvivalConfig.BANDAGE_USE_DURATION.get())
-                .targets(Wound.BLEEDING)
-                .targets(Wound.SEVERE_BLEEDING)
+        return HealingAction.builder(SurvivalConfig.TRAUMA_KIT_USE_DURATION.get())
+                .allParts()
                 .removes(Wound.BLEEDING)
                 .removes(Wound.SEVERE_BLEEDING)
-                .restores(SurvivalConfig.BANDAGE_HEAL_AMOUNT.get().intValue())
+                .removes(Wound.FRACTURE)
+                .restores(SurvivalConfig.TRAUMA_KIT_HEAL_AMOUNT.get())
                 .build();
     }
 }

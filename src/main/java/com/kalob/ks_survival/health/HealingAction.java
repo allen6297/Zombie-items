@@ -12,8 +12,8 @@ public final class HealingAction {
     public final int useDuration;
     public final int hpRestore;
     public final Set<Wound> removes;
-    /** Which wound type to prioritise when selecting a body part. Null = lowest HP. */
-    public final Wound targetWound;
+    /** Which wound types to prioritise when selecting a body part. Empty = lowest HP. */
+    public final Set<Wound> targetWounds;
     /** If true, the action is applied to ALL parts (e.g. systemic infection cure). */
     public final boolean allParts;
 
@@ -21,7 +21,7 @@ public final class HealingAction {
         this.useDuration  = b.useDuration;
         this.hpRestore    = b.hpRestore;
         this.removes      = b.removes.isEmpty() ? Set.of() : EnumSet.copyOf(b.removes);
-        this.targetWound  = b.targetWound;
+        this.targetWounds = b.targetWounds.isEmpty() ? Set.of() : EnumSet.copyOf(b.targetWounds);
         this.allParts     = b.allParts;
     }
 
@@ -29,12 +29,12 @@ public final class HealingAction {
     public BodyPart selectPart(BodyPartData data) {
         if (allParts) return null;
 
-        if (targetWound != null) {
+        if (!targetWounds.isEmpty()) {
             // Prefer the wounded part with lowest remaining HP (most urgent)
             BodyPart best = null;
             int lowestHp = Integer.MAX_VALUE;
             for (BodyPart part : BodyPart.values()) {
-                if (data.hasWound(part, targetWound)) {
+                if (targetWounds.stream().anyMatch(wound -> data.hasWound(part, wound))) {
                     int hp = data.getHp(part);
                     if (hp < lowestHp) { lowestHp = hp; best = part; }
                 }
@@ -64,6 +64,7 @@ public final class HealingAction {
             for (Wound w : removes) if (data.hasAnyWound(w)) return true;
             return false;
         }
+        if (!targetWounds.isEmpty() && targetWounds.stream().noneMatch(data::hasAnyWound)) return false;
         return selectPart(data) != null;
     }
 
@@ -91,14 +92,14 @@ public final class HealingAction {
         private final int useDuration;
         private int hpRestore   = 0;
         private final Set<Wound> removes = EnumSet.noneOf(Wound.class);
-        private Wound  targetWound = null;
+        private final Set<Wound> targetWounds = EnumSet.noneOf(Wound.class);
         private boolean allParts   = false;
 
         private Builder(int useDuration) { this.useDuration = useDuration; }
 
         public Builder restores(int hp)        { this.hpRestore = hp;   return this; }
         public Builder removes(Wound w)        { this.removes.add(w);   return this; }
-        public Builder targets(Wound w)        { this.targetWound = w;  return this; }
+        public Builder targets(Wound w)        { this.targetWounds.add(w);  return this; }
         public Builder allParts()              { this.allParts = true;  return this; }
         public HealingAction build()           { return new HealingAction(this); }
     }
