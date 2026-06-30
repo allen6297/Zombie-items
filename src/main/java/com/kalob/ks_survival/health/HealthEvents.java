@@ -42,6 +42,7 @@ public class HealthEvents {
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onLivingDamage(LivingDamageEvent.Pre event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        if (player.gameMode.getGameModeForPlayer() != net.minecraft.world.level.GameType.SURVIVAL) return;
 
         BodyPartData data = player.getData(ModAttachments.BODY_PARTS.get());
         BodyPart part   = resolveHitPart(event.getSource(), player, data);
@@ -82,6 +83,7 @@ public class HealthEvents {
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        if (player.gameMode.getGameModeForPlayer() != net.minecraft.world.level.GameType.SURVIVAL) return;
 
         BodyPartData data  = player.getData(ModAttachments.BODY_PARTS.get());
         boolean      dirty = false;
@@ -132,9 +134,38 @@ public class HealthEvents {
             dirty = true;
         }
 
+        // Wound escalation — untreated bleeding worsens over time
+        if (data.hasAnyWound(Wound.BLEEDING) || data.hasAnyWound(Wound.SEVERE_BLEEDING)) {
+            data.tickUntreatedBleed();
+            int bleedAge = data.getUntreatedBleedTicks();
+            if (bleedAge >= 6000 && !data.hasAnyWound(Wound.INFECTION)) {
+                for (BodyPart p : BodyPart.values()) {
+                    if (data.hasWound(p, Wound.SEVERE_BLEEDING)) data.addWound(p, Wound.INFECTION);
+                }
+                dirty = true;
+            } else if (bleedAge == 3000) {
+                for (BodyPart p : BodyPart.values()) {
+                    if (data.hasWound(p, Wound.BLEEDING) && !data.hasWound(p, Wound.SEVERE_BLEEDING)) {
+                        data.removeWound(p, Wound.BLEEDING);
+                        data.addWound(p, Wound.SEVERE_BLEEDING);
+                    }
+                }
+                dirty = true;
+            }
+        } else {
+            data.resetUntreatedBleed();
+        }
+
         int naturalHealInterval = SurvivalConfig.NATURAL_HEAL_INTERVAL.get();
         if (naturalHealInterval > 0 && age % naturalHealInterval == 0 && canNaturallyRecover(player, data)) {
-            dirty = data.healMostDamaged(SurvivalConfig.NATURAL_HEAL_AMOUNT.get());
+            int healAmount = SurvivalConfig.NATURAL_HEAL_AMOUNT.get();
+            for (BodyPart leg : new BodyPart[]{BodyPart.LEFT_LEG, BodyPart.RIGHT_LEG}) {
+                if (data.hasWound(leg, Wound.SPLINTED)) {
+                    data.heal(leg, healAmount);
+                    dirty = true;
+                }
+            }
+            if (data.healMostDamaged(healAmount)) dirty = true;
         }
 
         if (age % 100 == 0 && data.hasAnyWound(Wound.INFECTION)) {
@@ -413,6 +444,24 @@ public class HealthEvents {
                     net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT
                             .wrapAsHolder(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN.value()),
                     60, amplifier, false, false, true));
+        } else {
+            // Exhaustion — low (but non-zero) leg HP slows movement
+            int legExhaustionLevel = 0;
+            for (BodyPart leg : new BodyPart[]{BodyPart.LEFT_LEG, BodyPart.RIGHT_LEG}) {
+                int hp = data.getHp(leg);
+                int max = data.getMaxHp(leg);
+                if (hp > 0 && hp <= max / 4) {
+                    legExhaustionLevel = Math.max(legExhaustionLevel, 2);
+                } else if (hp > 0 && hp <= max / 2) {
+                    legExhaustionLevel = Math.max(legExhaustionLevel, 1);
+                }
+            }
+            if (legExhaustionLevel > 0) {
+                player.addEffect(new MobEffectInstance(
+                        net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT
+                                .wrapAsHolder(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN.value()),
+                        60, legExhaustionLevel - 1, false, false, true));
+            }
         }
     }
 

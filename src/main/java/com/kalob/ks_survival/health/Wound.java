@@ -6,7 +6,8 @@ public enum Wound implements StringRepresentable {
     BLEEDING("bleeding"),
     SEVERE_BLEEDING("severe_bleeding"),
     FRACTURE("fracture"),
-    INFECTION("infection");
+    INFECTION("infection"),
+    SPLINTED("splinted");
 
     private final String name;
 

@@ -14,6 +14,7 @@ public class SplintItem extends BodyHealingItem {
         return HealingAction.builder(80)
                 .targets(Wound.FRACTURE)
                 .removes(Wound.FRACTURE)
+                .adds(Wound.SPLINTED)
                 .restores(8)
                 .build();
     }

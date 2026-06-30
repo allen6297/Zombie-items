@@ -1,6 +1,6 @@
 package com.kalob.ks_survival.block;
 
-import com.kalob.ks_survival.block.menu.FoodTroughMenu;
+import com.kalob.ks_survival.menu.FoodTroughMenu;
 import com.kalob.ks_survival.init.SurvivalBlockEntities;
 import com.kalob.ks_survival.init.SurvivalConfig;
 import net.minecraft.core.BlockPos;

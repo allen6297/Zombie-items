@@ -1,6 +1,6 @@
 package com.kalob.ks_survival.client.layer;
 
-import com.kalob.ks_survival.farming.genetics.ClimateVariant;
+import com.kalob.ks_survival.husbandry.genetics.ClimateVariant;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
@@ -28,7 +28,7 @@ public class AppendageModels {
         // Sheep
         put(EntityType.SHEEP, ClimateVariant.COLD,   buildSheepColdHorns());
         put(EntityType.SHEEP, ClimateVariant.ARID,   buildSheepAridHorns());
-        // Goat appendages intentionally omitted — vanilla already renders goat horns
+        // Goat appendages intentionally omitted â€” vanilla already renders goat horns
     }
 
     public static ModelPart get(EntityType<?> type, ClimateVariant climate) {
@@ -53,8 +53,8 @@ public class AppendageModels {
     }
 
     // All positions are HEAD-LOCAL (origin = head pivot after translateAndRotate).
-    // Cow/sheep head cube ≈ (-4,-4,-6) to (4,4,0): top=y=-4, sides=x=±4, snout=z=-6.
-    // Pig head cube ≈ (-4,-4,-8) to (4,4,0): snout tip at z=-8.
+    // Cow/sheep head cube â‰ˆ (-4,-4,-6) to (4,4,0): top=y=-4, sides=x=Â±4, snout=z=-6.
+    // Pig head cube â‰ˆ (-4,-4,-8) to (4,4,0): snout tip at z=-8.
 
     // --- Cow ---
 

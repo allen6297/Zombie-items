@@ -1,8 +1,9 @@
 package com.kalob.ks_survival.entity;
 
-import com.kalob.ks_survival.farming.goal.FollowHerdGoal;
-import com.kalob.ks_survival.farming.goal.SeekFoodTroughGoal;
-import com.kalob.ks_survival.farming.goal.SeekWaterTroughGoal;
+import com.kalob.ks_survival.husbandry.goal.FollowHerdGoal;
+import com.kalob.ks_survival.init.SurvivalConfig;
+import com.kalob.ks_survival.husbandry.goal.SeekFoodTroughGoal;
+import com.kalob.ks_survival.husbandry.goal.SeekWaterTroughGoal;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -33,8 +34,17 @@ public abstract class SurvivalAnimalEntity extends Animal implements GeoEntity {
                 .add(Attributes.FOLLOW_RANGE, 16.0);
     }
 
-    /** The item(s) this animal is tempted by and can breed with. */
-    protected abstract Ingredient getTemptFood();
+    /** Items this animal is tempted by — derived from its configured diet tags. */
+    Ingredient getTemptFood() {
+        var tags = SurvivalConfig.getDietTags(this);
+        if (tags.isEmpty()) return Ingredient.of(net.minecraft.world.item.Items.WHEAT);
+        return Ingredient.of(tags.stream()
+                .flatMap(tag -> net.minecraft.core.registries.BuiltInRegistries.ITEM.getTag(tag)
+                        .stream()
+                        .flatMap(holders -> holders.stream()
+                                .map(h -> new net.minecraft.world.item.ItemStack(h.value()))))
+                .toArray(net.minecraft.world.item.ItemStack[]::new));
+    }
 
     @Override
     protected void registerGoals() {

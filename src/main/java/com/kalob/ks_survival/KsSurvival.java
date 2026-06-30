@@ -1,8 +1,8 @@
 package com.kalob.ks_survival;
 
-import com.kalob.ks_survival.entity.CowEntity;
-import com.kalob.ks_survival.farming.FarmAnimalSyncPacket;
-import com.kalob.ks_survival.farming.FarmingEvents;
+import com.kalob.ks_survival.entity.SurvivalCowEntity;
+import com.kalob.ks_survival.husbandry.FarmAnimalSyncPacket;
+import com.kalob.ks_survival.husbandry.FarmingEvents;
 import com.kalob.ks_survival.health.BodyPartSyncPacket;
 import com.kalob.ks_survival.health.HealthDebugCommands;
 import com.kalob.ks_survival.health.HealthEvents;
@@ -61,7 +61,7 @@ public class KsSurvival {
     }
 
     private void onRegisterAttributes(net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent event) {
-        event.put(SurvivalEntities.COW.get(), CowEntity.createAttributes().build());
+        event.put(SurvivalEntities.COW.get(), SurvivalCowEntity.createAttributes().build());
     }
 
     @SubscribeEvent

@@ -1,25 +1,22 @@
-package com.kalob.ks_survival.farming.goal;
+package com.kalob.ks_survival.husbandry.goal;
 
-import com.kalob.ks_survival.block.FoodTroughBlockEntity;
-import com.kalob.ks_survival.farming.FarmAnimalData;
-import com.kalob.ks_survival.farming.FarmAnimalSyncPacket;
+import com.kalob.ks_survival.block.WaterTroughBlockEntity;
+import com.kalob.ks_survival.husbandry.FarmAnimalData;
+import com.kalob.ks_survival.husbandry.FarmAnimalSyncPacket;
 import com.kalob.ks_survival.init.ModAttachments;
 import com.kalob.ks_survival.init.SurvivalBlocks;
 import com.kalob.ks_survival.init.SurvivalConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.Comparator;
 import java.util.EnumSet;
-import java.util.Set;
 
-public class SeekFoodTroughGoal extends Goal {
+public class SeekWaterTroughGoal extends Goal {
 
     private final PathfinderMob mob;
     private final int searchRadius;
@@ -27,22 +24,18 @@ public class SeekFoodTroughGoal extends Goal {
     private BlockPos targetPos;
     private int searchCooldown = 0;
 
-    public SeekFoodTroughGoal(PathfinderMob mob, int searchRadius, double speed) {
+    public SeekWaterTroughGoal(PathfinderMob mob, int searchRadius, double speed) {
         this.mob = mob;
         this.searchRadius = searchRadius;
         this.speed = speed;
         setFlags(EnumSet.of(Flag.MOVE));
     }
 
-    private Set<TagKey<Item>> getDietTags() {
-        return SurvivalConfig.getDietTags(mob);
-    }
-
     @Override
     public boolean canUse() {
         if (searchCooldown > 0) { searchCooldown--; return false; }
         FarmAnimalData data = mob.getData(ModAttachments.FARM_ANIMAL.get());
-        if (!data.isHungry()) return false;
+        if (!data.isThirsty()) return false;
         targetPos = findNearestTrough();
         searchCooldown = 100;
         return targetPos != null;
@@ -51,10 +44,9 @@ public class SeekFoodTroughGoal extends Goal {
     @Override
     public boolean canContinueToUse() {
         if (targetPos == null) return false;
-        if (!mob.level().getBlockState(targetPos).is(SurvivalBlocks.FOOD_TROUGH.get())) return false;
-        if (mob.level().getBlockEntity(targetPos) instanceof FoodTroughBlockEntity trough
-                && !trough.hasValidFood(getDietTags())) return false;
-        return mob.getData(ModAttachments.FARM_ANIMAL.get()).isHungry();
+        if (!mob.level().getBlockState(targetPos).is(SurvivalBlocks.WATER_TROUGH.get())) return false;
+        if (mob.level().getBlockEntity(targetPos) instanceof WaterTroughBlockEntity trough && !trough.hasWater()) return false;
+        return mob.getData(ModAttachments.FARM_ANIMAL.get()).isThirsty();
     }
 
     @Override
@@ -72,18 +64,16 @@ public class SeekFoodTroughGoal extends Goal {
         }
 
         if (mob.distanceToSqr(targetPos.getX() + 0.5, targetPos.getY(), targetPos.getZ() + 0.5) < 2.25) {
-            if (mob.level().getBlockEntity(targetPos) instanceof FoodTroughBlockEntity trough) {
+            if (mob.level().getBlockEntity(targetPos) instanceof WaterTroughBlockEntity trough) {
                 FarmAnimalData data = mob.getData(ModAttachments.FARM_ANIMAL.get());
-                if (data.isHungry() && trough.consumeValidFood(getDietTags())) {
-                    data.feed();
+                if (data.isThirsty() && trough.drain(SurvivalConfig.getDrinkAmount(mob))) {
+                    data.water();
                     mob.setData(ModAttachments.FARM_ANIMAL.get(), data);
                     if (mob.level() instanceof ServerLevel sl) {
-                        sl.sendParticles(ParticleTypes.HAPPY_VILLAGER,
+                        sl.sendParticles(ParticleTypes.DRIPPING_WATER,
                                 mob.getX(), mob.getY() + mob.getBbHeight(), mob.getZ(),
                                 5, 0.3, 0.3, 0.3, 0.0);
                     }
-                    mob.level().sendBlockUpdated(targetPos, mob.level().getBlockState(targetPos),
-                            mob.level().getBlockState(targetPos), 3);
                     PacketDistributor.sendToPlayersTrackingEntity(mob,
                             new FarmAnimalSyncPacket(mob.getId(), data));
                 }
@@ -101,8 +91,8 @@ public class SeekFoodTroughGoal extends Goal {
         return BlockPos.betweenClosedStream(
                 mob.blockPosition().offset(-searchRadius, -2, -searchRadius),
                 mob.blockPosition().offset(searchRadius, 2, searchRadius)
-        ).filter(pos -> mob.level().getBlockState(pos).is(SurvivalBlocks.FOOD_TROUGH.get()))
-                .filter(pos -> mob.level().getBlockEntity(pos) instanceof FoodTroughBlockEntity t && t.hasValidFood(getDietTags()))
+        ).filter(pos -> mob.level().getBlockState(pos).is(SurvivalBlocks.WATER_TROUGH.get()))
+                .filter(pos -> mob.level().getBlockEntity(pos) instanceof WaterTroughBlockEntity t && t.hasWater())
                 .map(BlockPos::immutable)
                 .min(Comparator.comparingDouble(pos -> pos.distSqr(mob.blockPosition())))
                 .orElse(null);

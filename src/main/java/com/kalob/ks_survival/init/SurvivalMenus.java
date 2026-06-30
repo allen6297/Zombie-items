@@ -1,7 +1,7 @@
 package com.kalob.ks_survival.init;
 
 import com.kalob.ks_survival.KsSurvival;
-import com.kalob.ks_survival.block.menu.FoodTroughMenu;
+import com.kalob.ks_survival.menu.FoodTroughMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;

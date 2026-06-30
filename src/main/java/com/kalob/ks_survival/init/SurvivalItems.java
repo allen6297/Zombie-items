@@ -3,6 +3,7 @@ package com.kalob.ks_survival.init;
 import com.kalob.ks_survival.KsSurvival;
 import com.kalob.ks_survival.item.BandageItem;
 import com.kalob.ks_survival.item.FeedBagItem;
+import com.kalob.ks_survival.item.ForagingToolItem;
 import com.kalob.ks_survival.item.MedicineItem;
 import com.kalob.ks_survival.item.SplintItem;
 import com.kalob.ks_survival.item.TraumaKitItem;
@@ -50,6 +51,9 @@ public class SurvivalItems {
 
     public static final DeferredItem<Item> ZOMBIE_KNIFE = ITEMS.register("zombie_knife",
             () -> new ZombieKnifeItem(new Item.Properties().stacksTo(1)));
+
+    public static final DeferredItem<Item> FORAGING_TOOL = ITEMS.register("foraging_tool",
+            () -> new ForagingToolItem(new Item.Properties().stacksTo(1).durability(64)));
 
     public static final DeferredItem<BlockItem> WATER_TROUGH = ITEMS.registerSimpleBlockItem(SurvivalBlocks.WATER_TROUGH);
     public static final DeferredItem<BlockItem> FOOD_TROUGH = ITEMS.registerSimpleBlockItem(SurvivalBlocks.FOOD_TROUGH);

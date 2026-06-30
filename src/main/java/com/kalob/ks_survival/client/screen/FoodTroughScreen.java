@@ -1,7 +1,7 @@
-package com.kalob.ks_survival.block.screen;
+package com.kalob.ks_survival.client.screen;
 
 import com.kalob.ks_survival.KsSurvival;
-import com.kalob.ks_survival.block.menu.FoodTroughMenu;
+import com.kalob.ks_survival.menu.FoodTroughMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;

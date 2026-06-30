@@ -1,4 +1,4 @@
-package com.kalob.ks_survival.farming;
+package com.kalob.ks_survival.husbandry;
 
 import com.kalob.ks_survival.init.ModAttachments;
 import net.minecraft.network.RegistryFriendlyByteBuf;

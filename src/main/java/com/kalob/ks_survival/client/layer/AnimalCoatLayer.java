@@ -1,8 +1,8 @@
 package com.kalob.ks_survival.client.layer;
 
-import com.kalob.ks_survival.farming.FarmAnimalData;
-import com.kalob.ks_survival.farming.genetics.Coat;
-import com.kalob.ks_survival.farming.genetics.Pattern;
+import com.kalob.ks_survival.husbandry.FarmAnimalData;
+import com.kalob.ks_survival.husbandry.genetics.Coat;
+import com.kalob.ks_survival.husbandry.genetics.Pattern;
 import com.kalob.ks_survival.init.ModAttachments;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.EntityModel;
@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.animal.Animal;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +31,7 @@ public class AnimalCoatLayer<T extends Animal, M extends EntityModel<T>> extends
     }
 
     @Override
-    public void render(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight,
+    public void render(@NotNull PoseStack poseStack, @NotNull MultiBufferSource bufferSource, int packedLight,
                        T entity, float limbSwing, float limbSwingAmount, float partialTick,
                        float ageInTicks, float netHeadYaw, float headPitch) {
         if (!entity.hasData(ModAttachments.FARM_ANIMAL.get())) return;

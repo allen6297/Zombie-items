@@ -1,4 +1,4 @@
-package com.kalob.ks_survival.farming.genetics;
+package com.kalob.ks_survival.husbandry.genetics;
 
 import net.minecraft.core.Holder;
 import net.minecraft.tags.BiomeTags;

@@ -1,6 +1,6 @@
-package com.kalob.ks_survival.farming.goal;
+package com.kalob.ks_survival.husbandry.goal;
 
-import com.kalob.ks_survival.farming.FarmAnimalData;
+import com.kalob.ks_survival.husbandry.FarmAnimalData;
 import com.kalob.ks_survival.init.ModAttachments;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;

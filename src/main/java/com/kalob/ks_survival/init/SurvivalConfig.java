@@ -20,7 +20,11 @@ public class SurvivalConfig {
 
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
-    // Animal needs
+    // -------------------------------------------------------------------------
+    // Husbandry
+    // -------------------------------------------------------------------------
+    static { BUILDER.push("husbandry"); }
+
     public static final ModConfigSpec.IntValue ANIMAL_TICK_INTERVAL = BUILDER
             .comment("How often animal hunger/thirst decrements in ticks (20 ticks = 1 second)")
             .translation("config.ks_survival.animalTickInterval")
@@ -36,13 +40,67 @@ public class SurvivalConfig {
             .translation("config.ks_survival.wellFedThreshold")
             .defineInRange("wellFedThreshold", 70, 0, 100);
 
-    // Productivity
     public static final ModConfigSpec.IntValue PRODUCTIVITY_CAP_TICKS = BUILDER
             .comment("Well-fed ticks required to reach 100% productivity")
             .translation("config.ks_survival.productivityCapTicks")
             .defineInRange("productivityCapTicks", 2000, 100, 100000);
 
-    // Crowding
+    public static final ModConfigSpec.IntValue OVERFEEDING_THRESHOLD = BUILDER
+            .comment("Ticks at max hunger and thirst before overfeeding penalty applies")
+            .translation("config.ks_survival.overfeedingThreshold")
+            .defineInRange("overfeedingThreshold", 2000, 100, 100000);
+
+    public static final ModConfigSpec.DoubleValue BONUS_DROP_CHANCE = BUILDER
+            .comment("Chance for each drop to be duplicated when killing a well-fed animal or using a butcher knife (0.0-1.0)")
+            .translation("config.ks_survival.bonusDropChance")
+            .defineInRange("bonusDropChance", 0.5, 0.0, 1.0);
+
+    public static final ModConfigSpec.ConfigValue<List<? extends String>> ANIMALS = BUILDER
+            .comment("List of entities that will be affected by husbandry mechanics")
+            .translation("config.ks_survival.animals")
+            .defineList("animals", new ArrayList<>(List.of("minecraft:cow", "minecraft:pig", "minecraft:sheep", "minecraft:goat", "minecraft:chicken", "ks_survival:cow")),
+                    entry -> entry instanceof String s && s.matches("[a-z0-9_.-]+:[a-z0-9_./-]+"));
+
+    public static final ModConfigSpec.ConfigValue<List<? extends String>> ANIMAL_DIET = BUILDER
+            .comment("Food tags each animal will eat from the food trough (format: namespace:entity=tag1,tag2)")
+            .translation("config.ks_survival.animalDiet")
+            .defineList("animalDiet", new ArrayList<>(List.of(
+                    "minecraft:cow=c:foods/vegetable,c:crops",
+                    "minecraft:pig=c:foods/vegetable,c:foods/fruit,c:crops",
+                    "minecraft:sheep=c:foods/vegetable,c:crops",
+                    "minecraft:goat=c:foods/vegetable,c:crops",
+                    "minecraft:chicken=c:seeds,c:foods/berry"
+            )), entry -> entry instanceof String s && s.matches("[a-z0-9_.-]+:[a-z0-9_./-]+=.+"));
+
+    public static final ModConfigSpec.ConfigValue<List<? extends String>> ANIMAL_WATER_NEEDS = BUILDER
+            .comment("Water consumed per drink per entity type (format: namespace:entity=mb). Unlisted animals use the default of 250 mB.")
+            .translation("config.ks_survival.animalWaterNeeds")
+            .defineList("animalWaterNeeds", new ArrayList<>(List.of(
+                    "minecraft:chicken=100",
+                    "minecraft:cow=300",
+                    "minecraft:pig=200",
+                    "minecraft:sheep=200",
+                    "minecraft:goat=150"
+            )), entry -> entry instanceof String s && s.matches("[a-z0-9_.-]+:[a-z0-9_./-]+=\\d+"));
+
+    public static final ModConfigSpec.ConfigValue<List<? extends String>> ANIMAL_BREEDING_SEASONS = BUILDER
+            .comment("Seasons each animal can breed in (format: namespace:entity=SPRING,SUMMER). Domestic animals ignore this restriction. Valid seasons: SPRING, SUMMER, AUTUMN, WINTER. Unlisted animals can breed year-round.")
+            .translation("config.ks_survival.animalBreedingSeasons")
+            .defineList("animalBreedingSeasons", new ArrayList<>(List.of(
+                    "minecraft:cow=SPRING,SUMMER",
+                    "minecraft:pig=SPRING,SUMMER,AUTUMN",
+                    "minecraft:sheep=SPRING",
+                    "minecraft:goat=AUTUMN,WINTER",
+                    "minecraft:chicken=SPRING,SUMMER"
+            )), entry -> entry instanceof String s && s.matches("[a-z0-9_.-]+:[a-z0-9_./-]+=.+"));
+
+    static { BUILDER.pop(); }
+
+    // -------------------------------------------------------------------------
+    // Behavior
+    // -------------------------------------------------------------------------
+    static { BUILDER.push("behavior"); }
+
     public static final ModConfigSpec.IntValue MUTATION_CHANCE = BUILDER
             .comment("Percent chance (0-100) that a genetics allele mutates to a random value on birth")
             .translation("config.ks_survival.mutationChance")
@@ -63,13 +121,11 @@ public class SurvivalConfig {
             .translation("config.ks_survival.crowdingRadius")
             .defineInRange("crowdingRadius", 8, 1, 32);
 
-    // Illness
     public static final ModConfigSpec.IntValue SICKNESS_THRESHOLD = BUILDER
             .comment("Consecutive stressed ticks before an animal becomes sick")
             .translation("config.ks_survival.sicknessThreshold")
             .defineInRange("sicknessThreshold", 2000, 20, 100000);
 
-    // Tameness
     public static final ModConfigSpec.IntValue TAMENESS_WILD_THRESHOLD = BUILDER
             .comment("Tameness level below which an animal is considered wild (0-100)")
             .translation("config.ks_survival.tamenessWildThreshold")
@@ -80,63 +136,23 @@ public class SurvivalConfig {
             .translation("config.ks_survival.tamenessDomesticThreshold")
             .defineInRange("tamenessDomesticThreshold", 60, 0, 100);
 
-    // Overfeeding
-    public static final ModConfigSpec.IntValue OVERFEEDING_THRESHOLD = BUILDER
-            .comment("Ticks at max hunger and thirst before overfeeding penalty applies")
-            .translation("config.ks_survival.overfeedingThreshold")
-            .defineInRange("overfeedingThreshold", 2000, 100, 100000);
+    public static final ModConfigSpec.DoubleValue DOMESTIC_ANIMAL_KICK_CHANCE = BUILDER
+            .comment("Chance that a domestic tracked animal kicks the player when hurt")
+            .translation("config.ks_survival.domesticAnimalKickChance")
+            .defineInRange("domesticAnimalKickChance", 0.35, 0.0, 1.0);
 
-    public static final ModConfigSpec.ConfigValue<List<? extends String>> ANIMALS = BUILDER
-            .comment("List of entities that will be affected by husbandry mechanics")
-            .translation("config.ks_survival.animals")
-            .defineList("animals", new ArrayList<>(List.of("minecraft:cow", "minecraft:pig", "minecraft:sheep", "minecraft:goat", "minecraft:chicken", "ks_survival:aurochs")),
-                    entry -> entry instanceof String s && s.matches("[a-z0-9_.-]+:[a-z0-9_./-]+"));
+    public static final ModConfigSpec.IntValue DOMESTIC_ANIMAL_KICK_DAMAGE = BUILDER
+            .comment("Body-part damage dealt to a player's leg by domestic animal retaliation")
+            .translation("config.ks_survival.domesticAnimalKickDamage")
+            .defineInRange("domesticAnimalKickDamage", 4, 0, 50);
 
-    public static final ModConfigSpec.ConfigValue<List<? extends String>> ANIMAL_DIET = BUILDER
-            .comment("Food tags each animal will eat from the food trough (format: namespace:entity=tag1,tag2)")
-            .translation("config.ks_survival.animalDiet")
-            .defineList("animalDiet", new ArrayList<>(List.of(
-                    "minecraft:cow=c:foods/vegetable,c:crops",
-                    "minecraft:pig=c:foods/vegetable,c:foods/fruit,c:crops",
-                    "minecraft:sheep=c:foods/vegetable,c:crops",
-                    "minecraft:goat=c:foods/vegetable,c:crops",
-                    "minecraft:chicken=c:seeds,c:foods/berry"
-            )), entry -> entry instanceof String s && s.matches("[a-z0-9_.-]+:[a-z0-9_./-]+=.+"));
+    static { BUILDER.pop(); }
 
-    public static final ModConfigSpec.ConfigValue<List<? extends String>> ANIMAL_BREEDING_SEASONS = BUILDER
-            .comment("Seasons each animal can breed in (format: namespace:entity=SPRING,SUMMER). Domestic animals ignore this restriction. Valid seasons: SPRING, SUMMER, AUTUMN, WINTER. Unlisted animals can breed year-round.")
-            .translation("config.ks_survival.animalBreedingSeasons")
-            .defineList("animalBreedingSeasons", new ArrayList<>(List.of(
-                    "minecraft:cow=SPRING,SUMMER",
-                    "minecraft:pig=SPRING,SUMMER,AUTUMN",
-                    "minecraft:sheep=SPRING",
-                    "minecraft:goat=AUTUMN,WINTER",
-                    "minecraft:chicken=SPRING,SUMMER"
-            )), entry -> entry instanceof String s && s.matches("[a-z0-9_.-]+:[a-z0-9_./-]+=.+"));
+    // -------------------------------------------------------------------------
+    // Health
+    // -------------------------------------------------------------------------
+    static { BUILDER.push("health"); }
 
-    public static final ModConfigSpec.ConfigValue<List<? extends String>> ANIMAL_WATER_NEEDS = BUILDER
-            .comment("Water consumed per drink per entity type (format: namespace:entity=mb). Unlisted animals use the default of 250 mB.")
-            .translation("config.ks_survival.animalWaterNeeds")
-            .defineList("animalWaterNeeds", new ArrayList<>(List.of(
-                    "minecraft:chicken=100",
-                    "minecraft:cow=300",
-                    "minecraft:pig=200",
-                    "minecraft:sheep=200",
-                    "minecraft:goat=150"
-            )), entry -> entry instanceof String s && s.matches("[a-z0-9_.-]+:[a-z0-9_./-]+=\\d+"));
-
-    // Bandage
-    public static final ModConfigSpec.DoubleValue BANDAGE_HEAL_AMOUNT = BUILDER
-            .comment("How much health the bandage restores")
-            .translation("config.ks_survival.bandageHealAmount")
-            .defineInRange("bandageHealAmount", 6.0, 0.5, 20.0);
-
-    public static final ModConfigSpec.IntValue BANDAGE_USE_DURATION = BUILDER
-            .comment("How long it takes to apply a bandage in ticks (20 ticks = 1 second)")
-            .translation("config.ks_survival.bandageUseDuration")
-            .defineInRange("bandageUseDuration", 60, 20, 200);
-
-    // Body-part health
     public static final ModConfigSpec.IntValue BLEED_INTERVAL = BUILDER
             .comment("How often bleeding damage is applied, in ticks (20 ticks = 1 second)")
             .translation("config.ks_survival.bleedInterval")
@@ -197,15 +213,15 @@ public class SurvivalConfig {
             .translation("config.ks_survival.legMaxHp")
             .defineInRange("legMaxHp", 20, 1, 120);
 
-    public static final ModConfigSpec.IntValue TRAUMA_KIT_USE_DURATION = BUILDER
-            .comment("How long it takes to apply a trauma kit in ticks")
-            .translation("config.ks_survival.traumaKitUseDuration")
-            .defineInRange("traumaKitUseDuration", 120, 20, 600);
+    public static final ModConfigSpec.IntValue PAIN_SHOCK_CONFUSION_TICKS = BUILDER
+            .comment("Nausea duration after a body part drops to critical HP, in ticks")
+            .translation("config.ks_survival.painShockConfusionTicks")
+            .defineInRange("painShockConfusionTicks", 80, 0, 1200);
 
-    public static final ModConfigSpec.IntValue TRAUMA_KIT_HEAL_AMOUNT = BUILDER
-            .comment("Body-part HP restored to all parts by a trauma kit")
-            .translation("config.ks_survival.traumaKitHealAmount")
-            .defineInRange("traumaKitHealAmount", 10, 1, 100);
+    public static final ModConfigSpec.IntValue PAIN_SHOCK_DARKNESS_TICKS = BUILDER
+            .comment("Darkness duration after a body part drops to critical HP, in ticks")
+            .translation("config.ks_survival.painShockDarknessTicks")
+            .defineInRange("painShockDarknessTicks", 40, 0, 1200);
 
     public static final ModConfigSpec.DoubleValue BODY_ARMOR_DAMAGE_MULTIPLIER = BUILDER
             .comment("Multiplier applied to body-part damage when matching armor is equipped")
@@ -217,27 +233,33 @@ public class SurvivalConfig {
             .translation("config.ks_survival.bodyArmorDurabilityDamageRatio")
             .defineInRange("bodyArmorDurabilityDamageRatio", 0.5, 0.0, 5.0);
 
-    public static final ModConfigSpec.IntValue PAIN_SHOCK_CONFUSION_TICKS = BUILDER
-            .comment("Nausea duration after a body part drops to critical HP, in ticks")
-            .translation("config.ks_survival.painShockConfusionTicks")
-            .defineInRange("painShockConfusionTicks", 80, 0, 1200);
+    static { BUILDER.pop(); }
 
-    public static final ModConfigSpec.IntValue PAIN_SHOCK_DARKNESS_TICKS = BUILDER
-            .comment("Darkness duration after a body part drops to critical HP, in ticks")
-            .translation("config.ks_survival.painShockDarknessTicks")
-            .defineInRange("painShockDarknessTicks", 40, 0, 1200);
+    // -------------------------------------------------------------------------
+    // Items
+    // -------------------------------------------------------------------------
+    static { BUILDER.push("items"); }
 
-    public static final ModConfigSpec.DoubleValue DOMESTIC_ANIMAL_KICK_CHANCE = BUILDER
-            .comment("Chance that a domestic tracked animal kicks the player when hurt")
-            .translation("config.ks_survival.domesticAnimalKickChance")
-            .defineInRange("domesticAnimalKickChance", 0.35, 0.0, 1.0);
+    public static final ModConfigSpec.DoubleValue BANDAGE_HEAL_AMOUNT = BUILDER
+            .comment("How much health the bandage restores")
+            .translation("config.ks_survival.bandageHealAmount")
+            .defineInRange("bandageHealAmount", 6.0, 0.5, 20.0);
 
-    public static final ModConfigSpec.IntValue DOMESTIC_ANIMAL_KICK_DAMAGE = BUILDER
-            .comment("Body-part damage dealt to a player's leg by domestic animal retaliation")
-            .translation("config.ks_survival.domesticAnimalKickDamage")
-            .defineInRange("domesticAnimalKickDamage", 4, 0, 50);
+    public static final ModConfigSpec.IntValue BANDAGE_USE_DURATION = BUILDER
+            .comment("How long it takes to apply a bandage in ticks (20 ticks = 1 second)")
+            .translation("config.ks_survival.bandageUseDuration")
+            .defineInRange("bandageUseDuration", 60, 20, 200);
 
-    // Cans
+    public static final ModConfigSpec.IntValue TRAUMA_KIT_USE_DURATION = BUILDER
+            .comment("How long it takes to apply a trauma kit in ticks")
+            .translation("config.ks_survival.traumaKitUseDuration")
+            .defineInRange("traumaKitUseDuration", 120, 20, 600);
+
+    public static final ModConfigSpec.IntValue TRAUMA_KIT_HEAL_AMOUNT = BUILDER
+            .comment("Body-part HP restored to all parts by a trauma kit")
+            .translation("config.ks_survival.traumaKitHealAmount")
+            .defineInRange("traumaKitHealAmount", 10, 1, 100);
+
     public static final ModConfigSpec.IntValue CAN1_THIRST = BUILDER
             .comment("Thirst restored by the small can")
             .translation("config.ks_survival.can1Thirst")
@@ -257,6 +279,8 @@ public class SurvivalConfig {
             .comment("Quench value of the big can")
             .translation("config.ks_survival.can2Quench")
             .defineInRange("can2Quench", 2, 0, 5);
+
+    static { BUILDER.pop(); }
 
     public static final ModConfigSpec SPEC = BUILDER.build();
 

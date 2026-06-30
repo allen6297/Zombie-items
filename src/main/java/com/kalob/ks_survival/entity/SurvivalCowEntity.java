@@ -16,9 +16,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class CowEntity extends SurvivalAnimalEntity {
+public class SurvivalCowEntity extends SurvivalAnimalEntity {
 
-    public CowEntity(EntityType<? extends CowEntity> type, Level level) {
+    public SurvivalCowEntity(EntityType<? extends SurvivalCowEntity> type, Level level) {
         super(type, level);
     }
 
@@ -29,13 +29,9 @@ public class CowEntity extends SurvivalAnimalEntity {
                 .add(Attributes.FOLLOW_RANGE, 16.0);
     }
 
-    @Override
-    protected Ingredient getTemptFood() {
-        return Ingredient.of(net.minecraft.tags.ItemTags.COW_FOOD);
-    }
 
     @Override
-    public @Nullable CowEntity getBreedOffspring(@NotNull ServerLevel level, @NotNull AgeableMob mate) {
+    public @Nullable SurvivalCowEntity getBreedOffspring(@NotNull ServerLevel level, @NotNull AgeableMob mate) {
         return SurvivalEntities.COW.get().create(level);
     }
 

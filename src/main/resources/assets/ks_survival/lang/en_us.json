@@ -12,6 +12,11 @@
   "block.ks_survival.water_trough": "Water Trough",
   "block.ks_survival.food_trough": "Food Trough",
 
+  "config.ks_survival.husbandry": "Husbandry",
+  "config.ks_survival.behavior": "Behavior",
+  "config.ks_survival.health": "Health",
+  "config.ks_survival.items": "Items",
+
   "config.ks_survival.animalTickInterval": "Animal Tick Interval",
   "config.ks_survival.animalTickInterval.tooltip": "How often animal hunger and thirst decrements, in ticks (20 ticks = 1 second).",
   "config.ks_survival.stressThreshold": "Stress Threshold",
@@ -20,6 +25,10 @@
   "config.ks_survival.wellFedThreshold.tooltip": "Hunger and thirst level above which an animal is considered well-fed (0–100).",
   "config.ks_survival.productivityCapTicks": "Productivity Cap Ticks",
   "config.ks_survival.productivityCapTicks.tooltip": "Number of consecutive well-fed ticks required to reach 100% productivity.",
+  "config.ks_survival.mutationChance": "Mutation Chance",
+  "config.ks_survival.mutationChance.tooltip": "Percent chance that a genetics allele mutates to a random value on birth (0–100).",
+  "config.ks_survival.fleeRadius": "Flee Radius",
+  "config.ks_survival.fleeRadius.tooltip": "Distance in blocks at which wild or panicking animals flee nearby players.",
   "config.ks_survival.crowdingLimit": "Crowding Limit",
   "config.ks_survival.crowdingLimit.tooltip": "Maximum animals of the same type within the crowding radius before stress applies.",
   "config.ks_survival.crowdingRadius": "Crowding Radius",
@@ -32,6 +41,8 @@
   "config.ks_survival.tamenessWildThreshold.tooltip": "Tameness at or below which an animal is considered wild and flees players (0–100).",
   "config.ks_survival.tamenessDomesticThreshold": "Domestic Tameness Threshold",
   "config.ks_survival.tamenessDomesticThreshold.tooltip": "Tameness above which an animal is considered fully domestic with uncapped productivity (0–100).",
+  "config.ks_survival.bonusDropChance": "Bonus Drop Chance",
+  "config.ks_survival.bonusDropChance.tooltip": "Chance for each drop to be duplicated when killing a well-fed animal or using a butcher knife (0.0–1.0).",
   "config.ks_survival.animals": "Tracked Animals",
   "config.ks_survival.animals.tooltip": "List of entity IDs affected by husbandry mechanics (e.g. minecraft:cow).",
   "config.ks_survival.animalDiet": "Animal Diet",
@@ -42,6 +53,7 @@
   "config.ks_survival.animalBreedingSeasons.tooltip": "Seasons each animal can breed in. Domestic animals always breed. Format: namespace:entity=SPRING,SUMMER",
 
   "item.ks_survival.splint": "Splint",
+  "item.ks_survival.foraging_tool": "Foraging Knife",
 
   "item.ks_survival.can1": "Can [small]",
   "item.ks_survival.can2": "Can [big]",

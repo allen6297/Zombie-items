@@ -1,4 +1,4 @@
-package com.kalob.ks_survival.block.menu;
+package com.kalob.ks_survival.menu;
 
 import com.kalob.ks_survival.block.FoodTroughBlockEntity;
 import com.kalob.ks_survival.init.SurvivalBlocks;

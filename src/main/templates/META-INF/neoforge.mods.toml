@@ -39,6 +39,13 @@ Farming, survival mechanics, and apocalypse items for K's modpack.
     side="BOTH"
 
 [[dependencies.${mod_id}]]
+    modId="clutternomore"
+    type="optional"
+    versionRange="[2.0,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
     modId="jade"
     type="optional"
     versionRange="[15.0,)"

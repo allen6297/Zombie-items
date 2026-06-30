@@ -1,7 +1,7 @@
 package com.kalob.ks_survival.item;
 
-import com.kalob.ks_survival.farming.FarmAnimalData;
-import com.kalob.ks_survival.farming.FarmAnimalSyncPacket;
+import com.kalob.ks_survival.husbandry.FarmAnimalData;
+import com.kalob.ks_survival.husbandry.FarmAnimalSyncPacket;
 import com.kalob.ks_survival.init.ModAttachments;
 import com.kalob.ks_survival.init.SurvivalConfig;
 import net.minecraft.world.effect.MobEffects;

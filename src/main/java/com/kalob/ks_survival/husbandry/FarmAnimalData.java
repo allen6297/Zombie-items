@@ -1,10 +1,10 @@
-package com.kalob.ks_survival.farming;
+package com.kalob.ks_survival.husbandry;
 
-import com.kalob.ks_survival.farming.genetics.ClimateVariant;
-import com.kalob.ks_survival.farming.genetics.Coat;
-import com.kalob.ks_survival.farming.genetics.Gender;
-import com.kalob.ks_survival.farming.genetics.Pattern;
-import com.kalob.ks_survival.farming.genetics.Trait;
+import com.kalob.ks_survival.husbandry.genetics.ClimateVariant;
+import com.kalob.ks_survival.husbandry.genetics.Coat;
+import com.kalob.ks_survival.husbandry.genetics.Gender;
+import com.kalob.ks_survival.husbandry.genetics.Pattern;
+import com.kalob.ks_survival.husbandry.genetics.Trait;
 import com.kalob.ks_survival.init.SurvivalConfig;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -207,6 +207,10 @@ public class FarmAnimalData {
 
     public void cure() {
         this.stressTicks = 0;
+    }
+
+    public void infect() {
+        this.stressTicks = Math.max(this.stressTicks, SurvivalConfig.SICKNESS_THRESHOLD.get());
     }
 
     public boolean isWild()       { return tameness <= SurvivalConfig.TAMENESS_WILD_THRESHOLD.get(); }

@@ -1,7 +1,7 @@
 package com.kalob.ks_survival.init;
 
 import com.kalob.ks_survival.KsSurvival;
-import com.kalob.ks_survival.farming.FarmAnimalData;
+import com.kalob.ks_survival.husbandry.FarmAnimalData;
 import com.kalob.ks_survival.health.BodyPartData;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;

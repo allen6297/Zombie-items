@@ -1,7 +1,7 @@
 package com.kalob.ks_survival.item;
 
-import com.kalob.ks_survival.farming.FarmAnimalData;
-import com.kalob.ks_survival.farming.FarmAnimalSyncPacket;
+import com.kalob.ks_survival.husbandry.FarmAnimalData;
+import com.kalob.ks_survival.husbandry.FarmAnimalSyncPacket;
 import com.kalob.ks_survival.health.HealingAction;
 import com.kalob.ks_survival.health.Wound;
 import com.kalob.ks_survival.init.ModAttachments;
@@ -19,7 +19,7 @@ public class MedicineItem extends BodyHealingItem {
 
     @Override
     public HealingAction getAction() {
-        // Infection is systemic — clear it from all parts at once and restore a little HP everywhere
+        // Infection is systemic â€” clear it from all parts at once and restore a little HP everywhere
         return HealingAction.builder(40)
                 .allParts()
                 .removes(Wound.INFECTION)

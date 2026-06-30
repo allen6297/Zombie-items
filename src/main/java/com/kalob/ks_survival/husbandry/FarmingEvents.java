@@ -1,12 +1,12 @@
-package com.kalob.ks_survival.farming;
+package com.kalob.ks_survival.husbandry;
 
 import com.kalob.ks_survival.compat.SereneSeasonsCompat;
-import com.kalob.ks_survival.farming.genetics.ClimateVariant;
-import com.kalob.ks_survival.farming.genetics.Gender;
-import com.kalob.ks_survival.farming.genetics.Trait;
-import com.kalob.ks_survival.farming.goal.FollowHerdGoal;
-import com.kalob.ks_survival.farming.goal.SeekFoodTroughGoal;
-import com.kalob.ks_survival.farming.goal.SeekWaterTroughGoal;
+import com.kalob.ks_survival.husbandry.genetics.ClimateVariant;
+import com.kalob.ks_survival.husbandry.genetics.Gender;
+import com.kalob.ks_survival.husbandry.genetics.Trait;
+import com.kalob.ks_survival.husbandry.goal.FollowHerdGoal;
+import com.kalob.ks_survival.husbandry.goal.SeekFoodTroughGoal;
+import com.kalob.ks_survival.husbandry.goal.SeekWaterTroughGoal;
 import com.kalob.ks_survival.health.BodyPart;
 import com.kalob.ks_survival.health.HealthEvents;
 import com.kalob.ks_survival.health.Wound;
@@ -15,15 +15,21 @@ import com.kalob.ks_survival.init.SurvivalConfig;
 import com.kalob.ks_survival.item.MedicineItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.Cow;
+import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.ShearsItem;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.BabyEntitySpawnEvent;
@@ -85,6 +91,14 @@ public class FarmingEvents {
                 animal.blockPosition().offset(5, 1, 5)
         ).anyMatch(pos -> animal.level().getFluidState(pos).is(FluidTags.WATER));
 
+        boolean inPen = BlockPos.betweenClosedStream(
+                animal.blockPosition().offset(-4, -1, -4),
+                animal.blockPosition().offset(4, 1, 4)
+        ).filter(pos -> {
+            var bs = animal.level().getBlockState(pos);
+            return bs.is(BlockTags.FENCES) || bs.is(BlockTags.FENCE_GATES);
+        }).count() >= 8;
+
         int extraHungerDrain = SereneSeasonsCompat.extraHungerDrain(animal.level());
         int extraThirstDrain = SereneSeasonsCompat.extraThirstDrain(animal.level());
 
@@ -97,8 +111,8 @@ public class FarmingEvents {
                 .stream().filter(e -> e != animal).toList();
         long herdCount = herd.size();
         int crowdingLimit = SurvivalConfig.CROWDING_LIMIT.get();
-        // Being in a small herd suppresses mild stress (safety in numbers)
-        boolean safetyBonus = herdCount >= 1 && herdCount < crowdingLimit;
+        // Being in a pen or a small herd suppresses mild stress
+        boolean safetyBonus = inPen || (herdCount >= 1 && herdCount < crowdingLimit);
 
         // - Core stat update -
         FarmAnimalData data = animal.getData(ModAttachments.FARM_ANIMAL.get());
@@ -111,6 +125,23 @@ public class FarmingEvents {
         if (nearDomestic && !data.isDomestic()) data.tickTameness(true);
 
         animal.setData(ModAttachments.FARM_ANIMAL.get(), data);
+
+        // - Disease spread — sick animals randomly infect nearby tracked animals -
+        if (data.isSick() && animal.getRandom().nextFloat() < 0.1f) {
+            List<Animal> candidates = animal.level()
+                    .getEntitiesOfClass(Animal.class, animal.getBoundingBox().inflate(5))
+                    .stream()
+                    .filter(e -> e != animal && SurvivalConfig.isTrackedAnimal(e))
+                    .filter(e -> !e.getData(ModAttachments.FARM_ANIMAL.get()).isSick())
+                    .toList();
+            if (!candidates.isEmpty()) {
+                Animal target = candidates.get(animal.getRandom().nextInt(candidates.size()));
+                FarmAnimalData targetData = target.getData(ModAttachments.FARM_ANIMAL.get());
+                targetData.infect();
+                target.setData(ModAttachments.FARM_ANIMAL.get(), targetData);
+                syncToTracking(target, targetData);
+            }
+        }
 
         // - Panic spread -
         // A panicking animal triggers panic in calm herd members nearby
@@ -228,12 +259,55 @@ public class FarmingEvents {
     }
 
     // -
-    // Medicine item interaction
+    // Medicine item interaction + milking/shearing schedule gates
     // -
+
+    private static final int MILK_COOLDOWN  = 12000; // ~10 min at 20 tps
+    private static final int SHEAR_COOLDOWN = 24000; // ~20 min at 20 tps
 
     @SubscribeEvent
     public static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
         MedicineItem.onEntityInteract(event);
+
+        if (event.getEntity().level().isClientSide()) return;
+        if (!(event.getTarget() instanceof Animal animal)) return;
+        if (!SurvivalConfig.isTrackedAnimal(animal)) return;
+
+        var held = event.getEntity().getItemInHand(event.getHand());
+        FarmAnimalData farmData = animal.getData(ModAttachments.FARM_ANIMAL.get());
+
+        // Milk bucket gate — requires well-fed cow, enforces cooldown
+        if (held.getItem() instanceof BucketItem && animal instanceof Cow) {
+            if (!farmData.isWellFed()) {
+                event.setCanceled(true);
+                return;
+            }
+            CompoundTag persist = animal.getPersistentData();
+            long lastMilked = persist.getLong("ks_lastMilked");
+            long worldTime = animal.level().getGameTime();
+            if (worldTime - lastMilked < MILK_COOLDOWN) {
+                event.setCanceled(true);
+                return;
+            }
+            persist.putLong("ks_lastMilked", worldTime);
+        }
+
+        // Shears gate — requires well-fed sheep with wool, enforces cooldown
+        if (held.getItem() instanceof ShearsItem && animal instanceof Sheep sheep
+                && sheep.isShearable(event.getEntity(), held, animal.level(), animal.blockPosition())) {
+            if (!farmData.isWellFed()) {
+                event.setCanceled(true);
+                return;
+            }
+            CompoundTag persist = animal.getPersistentData();
+            long lastSheared = persist.getLong("ks_lastSheared");
+            long worldTime = animal.level().getGameTime();
+            if (worldTime - lastSheared < SHEAR_COOLDOWN) {
+                event.setCanceled(true);
+                return;
+            }
+            persist.putLong("ks_lastSheared", worldTime);
+        }
     }
 
     // -

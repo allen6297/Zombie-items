@@ -1,6 +1,6 @@
 package com.kalob.ks_survival;
 
-import com.kalob.ks_survival.block.screen.FoodTroughScreen;
+import com.kalob.ks_survival.client.screen.FoodTroughScreen;
 import com.kalob.ks_survival.client.layer.AnimalAppendageLayer;
 import com.kalob.ks_survival.client.layer.AnimalCoatLayer;
 import com.kalob.ks_survival.client.layer.AppendageModels;

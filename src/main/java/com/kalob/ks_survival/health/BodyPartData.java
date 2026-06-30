@@ -38,7 +38,8 @@ public class BodyPartData {
             WOUND_MAP_CODEC.fieldOf("wounds").forGetter(d -> d.wounds),
             Codec.INT.optionalFieldOf("movementLockTicks", 0).forGetter(d -> d.movementLockTicks),
             PART_CODEC.optionalFieldOf("lastDamagedPart", BodyPart.TORSO).forGetter(d -> d.lastDamagedPart),
-            Codec.INT.optionalFieldOf("damageFlashTicks", 0).forGetter(d -> d.damageFlashTicks)
+            Codec.INT.optionalFieldOf("damageFlashTicks", 0).forGetter(d -> d.damageFlashTicks),
+            Codec.INT.optionalFieldOf("untreatedBleedTicks", 0).forGetter(d -> d.untreatedBleedTicks)
     ).apply(inst, BodyPartData::new));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, BodyPartData> STREAM_CODEC =
@@ -49,6 +50,7 @@ public class BodyPartData {
     private int movementLockTicks;
     private BodyPart lastDamagedPart;
     private int damageFlashTicks;
+    private int untreatedBleedTicks;
 
     public BodyPartData() {
         this.hp = new EnumMap<>(BodyPart.class);
@@ -60,10 +62,11 @@ public class BodyPartData {
         movementLockTicks = 0;
         lastDamagedPart = BodyPart.TORSO;
         damageFlashTicks = 0;
+        untreatedBleedTicks = 0;
     }
 
     private BodyPartData(Map<BodyPart, Integer> hp, Map<BodyPart, Set<Wound>> wounds, int movementLockTicks,
-                         BodyPart lastDamagedPart, int damageFlashTicks) {
+                         BodyPart lastDamagedPart, int damageFlashTicks, int untreatedBleedTicks) {
         this.hp = new EnumMap<>(hp);
         this.wounds = new EnumMap<>(BodyPart.class);
         for (BodyPart part : BodyPart.values()) {
@@ -74,7 +77,14 @@ public class BodyPartData {
         this.movementLockTicks = Math.max(0, movementLockTicks);
         this.lastDamagedPart = lastDamagedPart;
         this.damageFlashTicks = Math.max(0, damageFlashTicks);
+        this.untreatedBleedTicks = Math.max(0, untreatedBleedTicks);
     }
+
+    public int getUntreatedBleedTicks() { return untreatedBleedTicks; }
+
+    public void tickUntreatedBleed() { untreatedBleedTicks++; }
+
+    public void resetUntreatedBleed() { untreatedBleedTicks = 0; }
 
     public int getHp(BodyPart part) {
         return hp.getOrDefault(part, configuredMaxHp(part));
@@ -148,7 +158,11 @@ public class BodyPartData {
     }
 
     public void heal(BodyPart part, int amount) {
-        hp.put(part, Math.min(getMaxHp(part), getHp(part) + amount));
+        int newHp = Math.min(getMaxHp(part), getHp(part) + amount);
+        hp.put(part, newHp);
+        if (newHp >= getMaxHp(part)) {
+            removeWound(part, Wound.SPLINTED);
+        }
     }
 
     public void setHp(BodyPart part, int amount) {
@@ -195,6 +209,7 @@ public class BodyPartData {
         copy.movementLockTicks = movementLockTicks;
         copy.lastDamagedPart = lastDamagedPart;
         copy.damageFlashTicks = damageFlashTicks;
+        copy.untreatedBleedTicks = untreatedBleedTicks;
         return copy;
     }
 

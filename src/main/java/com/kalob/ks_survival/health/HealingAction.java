@@ -12,6 +12,7 @@ public final class HealingAction {
     public final int useDuration;
     public final int hpRestore;
     public final Set<Wound> removes;
+    public final Set<Wound> adds;
     /** Which wound types to prioritise when selecting a body part. Empty = lowest HP. */
     public final Set<Wound> targetWounds;
     /** If true, the action is applied to ALL parts (e.g. systemic infection cure). */
@@ -21,6 +22,7 @@ public final class HealingAction {
         this.useDuration  = b.useDuration;
         this.hpRestore    = b.hpRestore;
         this.removes      = b.removes.isEmpty() ? Set.of() : EnumSet.copyOf(b.removes);
+        this.adds         = b.adds.isEmpty() ? Set.of() : EnumSet.copyOf(b.adds);
         this.targetWounds = b.targetWounds.isEmpty() ? Set.of() : EnumSet.copyOf(b.targetWounds);
         this.allParts     = b.allParts;
     }
@@ -80,6 +82,7 @@ public final class HealingAction {
     private void applyOne(BodyPartData data, BodyPart part) {
         if (hpRestore > 0) data.heal(part, hpRestore);
         for (Wound w : removes) data.removeWound(part, w);
+        for (Wound w : adds) data.addWound(part, w);
     }
 
     // --- Builder ---
@@ -97,8 +100,11 @@ public final class HealingAction {
 
         private Builder(int useDuration) { this.useDuration = useDuration; }
 
+        private final Set<Wound> adds = EnumSet.noneOf(Wound.class);
+
         public Builder restores(int hp)        { this.hpRestore = hp;   return this; }
         public Builder removes(Wound w)        { this.removes.add(w);   return this; }
+        public Builder adds(Wound w)           { this.adds.add(w);      return this; }
         public Builder targets(Wound w)        { this.targetWounds.add(w);  return this; }
         public Builder allParts()              { this.allParts = true;  return this; }
         public HealingAction build()           { return new HealingAction(this); }

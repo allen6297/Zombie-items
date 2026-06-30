@@ -1,24 +1,18 @@
 package com.kalob.ks_survival.client.model;
 
 import com.kalob.ks_survival.KsSurvival;
-import com.kalob.ks_survival.entity.CowEntity;
+import com.kalob.ks_survival.entity.SurvivalCowEntity;
 import net.minecraft.resources.ResourceLocation;
-import software.bernie.geckolib.model.GeoModel;
+import software.bernie.geckolib.model.DefaultedGeoModel;
 
-public class AurochsModel extends GeoModel<CowEntity> {
+public class AurochsModel extends DefaultedGeoModel<SurvivalCowEntity> {
 
-    @Override
-    public ResourceLocation getModelResource(CowEntity entity) {
-        return ResourceLocation.fromNamespaceAndPath(KsSurvival.MODID, "geo/entity/aurochs.geo.json");
+    public AurochsModel() {
+        super(ResourceLocation.fromNamespaceAndPath(KsSurvival.MODID, "cow"));
     }
 
     @Override
-    public ResourceLocation getTextureResource(CowEntity entity) {
-        return ResourceLocation.fromNamespaceAndPath(KsSurvival.MODID, "textures/entity/aurochs/aurochs.png");
-    }
-
-    @Override
-    public ResourceLocation getAnimationResource(CowEntity entity) {
-        return ResourceLocation.fromNamespaceAndPath(KsSurvival.MODID, "animations/entity/aurochs.animation.json");
+    protected String subtype() {
+        return "";
     }
 }

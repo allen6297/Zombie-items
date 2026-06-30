@@ -134,6 +134,10 @@ dependencies {
     compileOnly "maven.modrinth:jade:15.10.5+neoforge"
     localRuntime "maven.modrinth:jade:15.10.5+neoforge"
 
+    // --- Block shapes ---
+    compileOnly "maven.modrinth:clutter-no-more:2.0.6+1.21.1-neoforge"
+    localRuntime "maven.modrinth:clutter-no-more:2.0.6+1.21.1-neoforge"
+
     // --- Season integration ---
     compileOnly "maven.modrinth:serene-seasons:SPj5bJoM"
     localRuntime "maven.modrinth:serene-seasons:SPj5bJoM"

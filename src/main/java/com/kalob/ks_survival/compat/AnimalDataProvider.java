@@ -1,12 +1,12 @@
 package com.kalob.ks_survival.compat;
 
 import com.kalob.ks_survival.KsSurvival;
-import com.kalob.ks_survival.farming.FarmAnimalData;
-import com.kalob.ks_survival.farming.genetics.ClimateVariant;
-import com.kalob.ks_survival.farming.genetics.Coat;
-import com.kalob.ks_survival.farming.genetics.Gender;
-import com.kalob.ks_survival.farming.genetics.Pattern;
-import com.kalob.ks_survival.farming.genetics.Trait;
+import com.kalob.ks_survival.husbandry.FarmAnimalData;
+import com.kalob.ks_survival.husbandry.genetics.ClimateVariant;
+import com.kalob.ks_survival.husbandry.genetics.Coat;
+import com.kalob.ks_survival.husbandry.genetics.Gender;
+import com.kalob.ks_survival.husbandry.genetics.Pattern;
+import com.kalob.ks_survival.husbandry.genetics.Trait;
 import com.kalob.ks_survival.init.ModAttachments;
 import com.kalob.ks_survival.init.SurvivalConfig;
 import net.minecraft.ChatFormatting;
@@ -94,7 +94,7 @@ public class AnimalDataProvider implements IEntityComponentProvider, IServerData
         tooltip.add(Component.literal("Tameness: " + tameness + "% (" + tamenessLabel + ")").withStyle(tamenessColor));
 
         if (data.contains("canBreed") && !data.getBoolean("canBreed")) {
-            tooltip.add(Component.literal("✗ Out of breeding season").withStyle(ChatFormatting.DARK_GRAY));
+            tooltip.add(Component.literal("âœ— Out of breeding season").withStyle(ChatFormatting.DARK_GRAY));
         }
 
         if (data.contains("coat")) {
@@ -126,9 +126,9 @@ public class AnimalDataProvider implements IEntityComponentProvider, IServerData
         }
 
         if (data.getBoolean("panicking")) {
-            tooltip.add(Component.literal("⚠ Panicking").withStyle(ChatFormatting.YELLOW));
+            tooltip.add(Component.literal("âš  Panicking").withStyle(ChatFormatting.YELLOW));
         } else if (data.getBoolean("sick")) {
-            tooltip.add(Component.literal("⚠ Sick").withStyle(ChatFormatting.DARK_RED));
+            tooltip.add(Component.literal("âš  Sick").withStyle(ChatFormatting.DARK_RED));
         } else if (data.getBoolean("overfed")) {
             tooltip.add(Component.literal("Overfed").withStyle(ChatFormatting.GOLD));
         } else if (data.getBoolean("wellFed")) {
