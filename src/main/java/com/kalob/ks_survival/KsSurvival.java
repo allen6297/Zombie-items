@@ -1,5 +1,6 @@
 package com.kalob.ks_survival;
 
+import com.kalob.ks_survival.entity.CowEntity;
 import com.kalob.ks_survival.farming.FarmAnimalSyncPacket;
 import com.kalob.ks_survival.farming.FarmingEvents;
 import com.kalob.ks_survival.health.BodyPartSyncPacket;
@@ -10,6 +11,7 @@ import com.kalob.ks_survival.init.SurvivalBlockEntities;
 import com.kalob.ks_survival.init.SurvivalBlocks;
 import com.kalob.ks_survival.init.SurvivalConfig;
 import com.kalob.ks_survival.init.SurvivalCreativeTabs;
+import com.kalob.ks_survival.init.SurvivalEntities;
 import com.kalob.ks_survival.init.SurvivalItems;
 import com.kalob.ks_survival.init.SurvivalLootModifiers;
 import com.kalob.ks_survival.init.SurvivalMenus;
@@ -32,6 +34,7 @@ public class KsSurvival {
 
     public KsSurvival(IEventBus modEventBus, ModContainer modContainer) {
         ModAttachments.ATTACHMENT_TYPES.register(modEventBus);
+        SurvivalEntities.ENTITY_TYPES.register(modEventBus);
         SurvivalLootModifiers.LOOT_MODIFIERS.register(modEventBus);
         SurvivalMenus.MENU_TYPES.register(modEventBus);
         SurvivalBlocks.BLOCKS.register(modEventBus);
@@ -48,12 +51,17 @@ public class KsSurvival {
         modContainer.registerConfig(ModConfig.Type.COMMON, SurvivalConfig.SPEC);
         modEventBus.addListener(this::onConfigReload);
         modEventBus.addListener(this::onRegisterPayloads);
+        modEventBus.addListener(this::onRegisterAttributes);
     }
 
     private void onRegisterPayloads(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar("1");
         registrar.playToClient(FarmAnimalSyncPacket.TYPE, FarmAnimalSyncPacket.STREAM_CODEC, FarmAnimalSyncPacket::handle);
         registrar.playToClient(BodyPartSyncPacket.TYPE, BodyPartSyncPacket.STREAM_CODEC, BodyPartSyncPacket::handle);
+    }
+
+    private void onRegisterAttributes(net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent event) {
+        event.put(SurvivalEntities.COW.get(), CowEntity.createAttributes().build());
     }
 
     @SubscribeEvent

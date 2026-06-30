@@ -89,7 +89,7 @@ public class SurvivalConfig {
     public static final ModConfigSpec.ConfigValue<List<? extends String>> ANIMALS = BUILDER
             .comment("List of entities that will be affected by husbandry mechanics")
             .translation("config.ks_survival.animals")
-            .defineList("animals", new ArrayList<>(List.of("minecraft:cow", "minecraft:pig", "minecraft:sheep", "minecraft:goat", "minecraft:chicken")),
+            .defineList("animals", new ArrayList<>(List.of("minecraft:cow", "minecraft:pig", "minecraft:sheep", "minecraft:goat", "minecraft:chicken", "ks_survival:aurochs")),
                     entry -> entry instanceof String s && s.matches("[a-z0-9_.-]+:[a-z0-9_./-]+"));
 
     public static final ModConfigSpec.ConfigValue<List<? extends String>> ANIMAL_DIET = BUILDER

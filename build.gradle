@@ -31,6 +31,10 @@ repositories {
         name = "Modrinth"
         url = "https://api.modrinth.com/maven"
     }
+    maven {
+        name = "GeckoLib"
+        url = "https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/"
+    }
 }
 
 base {
@@ -150,6 +154,8 @@ dependencies {
     compileOnly "maven.modrinth:architectury-api:13.0.8+neoforge"
     localRuntime "maven.modrinth:architectury-api:13.0.8+neoforge"
 
+    // --- GeckoLib ---
+    implementation "software.bernie.geckolib:geckolib-neoforge-1.21.1:4.7"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

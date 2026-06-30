@@ -24,7 +24,15 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 public class HealthEvents {
+
+    // Tracks the last tick each player bled, keyed by UUID.
+    // Initialised to tickCount on login so the first bleed is always a full interval away.
+    private static final Map<UUID, Integer> lastBleedTick = new HashMap<>();
 
     // --- Damage routing ---
     // We don't absorb vanilla damage. Instead we track body part HP in parallel.
@@ -54,7 +62,8 @@ public class HealthEvents {
         if (lethalPartDestroyed) {
             event.setNewDamage(Math.max(event.getNewDamage(), player.getHealth()));
         } else if (!part.lethal && event.getNewDamage() >= player.getHealth()) {
-            event.setNewDamage(Math.max(0f, player.getHealth() - 1f));
+            // Clamp to just below current HP so the player survives; 0.01 avoids the exact-zero kill path
+            event.setNewDamage(Math.max(0.01f, player.getHealth() - 0.01f));
         }
 
         if (isBleeding(event.getSource())) {
@@ -94,19 +103,32 @@ public class HealthEvents {
         }
 
         int bleedInterval = SurvivalConfig.BLEED_INTERVAL.get();
-        if (bleedInterval > 0 && age % bleedInterval == 0
+        int lastBled = lastBleedTick.getOrDefault(player.getUUID(), age);
+        if (bleedInterval > 0 && age - lastBled >= bleedInterval
                 && (data.hasAnyWound(Wound.BLEEDING) || data.hasAnyWound(Wound.SEVERE_BLEEDING))) {
-            // Directly reduce health to bypass our own damage handler
-            float bleedDamage = data.hasAnyWound(Wound.SEVERE_BLEEDING)
+            boolean severe = data.hasAnyWound(Wound.SEVERE_BLEEDING);
+            float bleedDamage = severe
                     ? SurvivalConfig.SEVERE_BLEED_DAMAGE.get().floatValue()
                     : SurvivalConfig.BLEED_DAMAGE.get().floatValue();
+
+            // Drain body-part HP on bleeding parts so the HUD bars visibly drop
+            int partDrain = Math.max(1, Math.round(bleedDamage));
+            for (BodyPart part : BodyPart.values()) {
+                Wound w = severe ? Wound.SEVERE_BLEEDING : Wound.BLEEDING;
+                if (data.hasWound(part, w) || (severe && data.hasWound(part, Wound.BLEEDING))) {
+                    data.damage(part, partDrain);
+                }
+            }
+
+            // Also drain vanilla HP so the player can actually die from blood loss
             float next = player.getHealth() - bleedDamage;
             if (next <= 0) {
                 player.kill();
             } else {
                 player.setHealth(next);
-                player.hurtMarked = true; // triggers client-side hurt flash
+                player.hurtMarked = true;
             }
+            lastBleedTick.put(player.getUUID(), age);
             dirty = true;
         }
 
@@ -140,13 +162,21 @@ public class HealthEvents {
     @SubscribeEvent
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        // Seed lastBleedTick to current tick so the first bleed is a full interval away, not immediate.
+        lastBleedTick.put(player.getUUID(), player.tickCount);
         sync(player, player.getData(ModAttachments.BODY_PARTS.get()));
     }
 
     @SubscribeEvent
     public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        lastBleedTick.put(player.getUUID(), player.tickCount);
         sync(player, player.getData(ModAttachments.BODY_PARTS.get()));
+    }
+
+    @SubscribeEvent
+    public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        lastBleedTick.remove(event.getEntity().getUUID());
     }
 
     @SubscribeEvent
@@ -344,9 +374,13 @@ public class HealthEvents {
     private static boolean tickMovementLock(ServerPlayer player, BodyPartData data, int age) {
         if (!data.isMovementLocked()) return false;
 
-        Vec3 movement = player.getDeltaMovement();
-        player.setDeltaMovement(0, Math.min(0, movement.y), 0);
-        player.hurtMarked = true;
+        // Apply a strong slowness effect each tick rather than zeroing delta movement directly.
+        // Zeroing deltaMovement every tick fights the client's position correction and causes
+        // jitter and broken container interactions.
+        player.addEffect(new MobEffectInstance(
+                net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT
+                        .wrapAsHolder(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN.value()),
+                5, 6, false, false, false));
 
         boolean changed = data.tickMovementLock();
         if (changed && (age % 20 == 0 || !data.isMovementLocked())) {
@@ -383,8 +417,14 @@ public class HealthEvents {
     }
 
     private static boolean isBleeding(DamageSource src) {
-        return src.is(DamageTypeTags.IS_PROJECTILE)
-                || src.getDirectEntity() instanceof net.minecraft.world.entity.LivingEntity;
+        if (src.is(DamageTypeTags.IS_PROJECTILE)) return true;
+        // Fall, fire, drowning, explosions, and bypass sources have null or no LivingEntity directEntity.
+        // Melee hits from mobs/players do, so this correctly catches only weapon hits.
+        if (src.is(DamageTypeTags.IS_FALL) || src.is(DamageTypeTags.IS_FIRE)
+                || src.is(DamageTypeTags.IS_EXPLOSION) || src.is(DamageTypeTags.BYPASSES_ARMOR)) {
+            return false;
+        }
+        return src.getDirectEntity() instanceof net.minecraft.world.entity.LivingEntity;
     }
 
     private static boolean isSevereBleed(DamageSource src, int damage) {

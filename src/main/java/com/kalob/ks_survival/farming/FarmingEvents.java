@@ -54,13 +54,16 @@ public class FarmingEvents {
         // Only assign genetics when the attachment has not already been populated
         // by breeding inheritance or persisted world data.
         FarmAnimalData data = animal.getData(ModAttachments.FARM_ANIMAL.get());
-        if (!data.hasInitializedGenetics() && data.hasStoredGenetics()) {
-            data.markGeneticsInitialized();
-            animal.setData(ModAttachments.FARM_ANIMAL.get(), data);
-        } else if (!data.hasInitializedGenetics()) {
-            ClimateVariant climate = ClimateVariant.fromBiome(
-                    animal.level().getBiome(animal.blockPosition()));
-            data.setRandomAlleles(animal.level().getRandom(), climate);
+        if (!data.hasInitializedGenetics()) {
+            if (data.hasStoredGenetics()) {
+                // Bred offspring: genetics were written by inheritGenetics(), just mark as done.
+                data.markGeneticsInitialized();
+            } else {
+                // Fresh wild spawn: roll random alleles for the local biome.
+                ClimateVariant climate = ClimateVariant.fromBiome(
+                        animal.level().getBiome(animal.blockPosition()));
+                data.setRandomAlleles(animal.level().getRandom(), climate);
+            }
             animal.setData(ModAttachments.FARM_ANIMAL.get(), data);
         }
     }

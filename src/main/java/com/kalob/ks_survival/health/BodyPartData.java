@@ -140,6 +140,9 @@ public class BodyPartData {
         if (next == 0 && part.lethal) return true;
         if (next == 0 && current > 0) {
             addWound(part, Wound.FRACTURE);
+            // Crippling a limb seals the wound — bleeding can't continue from a destroyed part
+            removeWound(part, Wound.BLEEDING);
+            removeWound(part, Wound.SEVERE_BLEEDING);
         }
         return false;
     }

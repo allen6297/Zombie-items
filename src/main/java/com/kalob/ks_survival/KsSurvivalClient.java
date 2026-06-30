@@ -4,7 +4,9 @@ import com.kalob.ks_survival.block.screen.FoodTroughScreen;
 import com.kalob.ks_survival.client.layer.AnimalAppendageLayer;
 import com.kalob.ks_survival.client.layer.AnimalCoatLayer;
 import com.kalob.ks_survival.client.layer.AppendageModels;
+import com.kalob.ks_survival.client.renderer.SurvivalCowRenderer;
 import com.kalob.ks_survival.health.HealthHudOverlay;
+import com.kalob.ks_survival.init.SurvivalEntities;
 import com.kalob.ks_survival.init.SurvivalMenus;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.world.entity.EntityType;
@@ -32,6 +34,7 @@ public class KsSurvivalClient {
         bus.addListener(this::onRegisterMenuScreens);
         bus.addListener(this::onAddRenderLayers);
         bus.addListener(this::onRegisterGuiLayers);
+        bus.addListener(this::onRegisterEntityRenderers);
         NeoForge.EVENT_BUS.addListener(this::onRenderGuiLayer);
     }
 
@@ -46,9 +49,18 @@ public class KsSurvivalClient {
     }
 
     private void onRenderGuiLayer(RenderGuiLayerEvent.Pre event) {
-        if (event.getName().equals(VanillaGuiLayers.PLAYER_HEALTH)) {
+        // Suppress the vanilla health and armor bars — our HUD replaces them.
+        // FOOD and EXPERIENCE bars are kept. ARMOR is suppressed because it's
+        // redundant with per-part armor tracking. ABSORPTION is suppressed here
+        // and must be drawn by HealthHudOverlay if/when absorption hearts are added.
+        if (event.getName().equals(VanillaGuiLayers.PLAYER_HEALTH)
+                || event.getName().equals(VanillaGuiLayers.ARMOR_LEVEL)) {
             event.setCanceled(true);
         }
+    }
+
+    private void onRegisterEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(SurvivalEntities.COW.get(), SurvivalCowRenderer::new);
     }
 
     @SuppressWarnings("unchecked")

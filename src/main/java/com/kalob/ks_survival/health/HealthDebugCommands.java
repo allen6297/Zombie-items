@@ -3,14 +3,28 @@ package com.kalob.ks_survival.health;
 import com.kalob.ks_survival.init.ModAttachments;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
+import java.util.List;
+
 public class HealthDebugCommands {
+
+    private static final List<String> PART_NAMES = List.of(
+            "head", "torso", "left_arm", "right_arm", "left_leg", "right_leg");
+    private static final List<String> WOUND_NAMES = List.of(
+            "bleeding", "severe_bleeding", "fracture", "infection");
+
+    private static final SuggestionProvider<net.minecraft.commands.CommandSourceStack> SUGGEST_PARTS =
+            (ctx, builder) -> SharedSuggestionProvider.suggest(PART_NAMES, builder);
+    private static final SuggestionProvider<net.minecraft.commands.CommandSourceStack> SUGGEST_WOUNDS =
+            (ctx, builder) -> SharedSuggestionProvider.suggest(WOUND_NAMES, builder);
 
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
@@ -21,6 +35,7 @@ public class HealthDebugCommands {
                                 .executes(context -> heal(context.getSource().getPlayerOrException())))
                         .then(Commands.literal("set")
                                 .then(Commands.argument("part", StringArgumentType.word())
+                                        .suggests(SUGGEST_PARTS)
                                         .then(Commands.argument("hp", IntegerArgumentType.integer(0))
                                                 .executes(context -> setHp(
                                                         context.getSource().getPlayerOrException(),
@@ -28,7 +43,9 @@ public class HealthDebugCommands {
                                                         IntegerArgumentType.getInteger(context, "hp"))))))
                         .then(Commands.literal("wound")
                                 .then(Commands.argument("part", StringArgumentType.word())
+                                        .suggests(SUGGEST_PARTS)
                                         .then(Commands.argument("wound", StringArgumentType.word())
+                                                .suggests(SUGGEST_WOUNDS)
                                                 .executes(context -> wound(
                                                         context.getSource().getPlayerOrException(),
                                                         StringArgumentType.getString(context, "part"),
@@ -93,12 +110,22 @@ public class HealthDebugCommands {
     }
 
     private static BodyPart parsePart(String name) {
+        String n = name.toLowerCase().replace(".", "_").replace(" ", "_");
         for (BodyPart part : BodyPart.values()) {
-            if (part.getSerializedName().equalsIgnoreCase(name) || part.name().equalsIgnoreCase(name)) {
+            if (part.getSerializedName().equalsIgnoreCase(n) || part.name().equalsIgnoreCase(n)) {
                 return part;
             }
         }
-        return null;
+        // Common shorthand aliases
+        return switch (n) {
+            case "l_arm", "larm", "lf_arm"  -> BodyPart.LEFT_ARM;
+            case "r_arm", "rarm", "rt_arm"  -> BodyPart.RIGHT_ARM;
+            case "l_leg", "lleg"            -> BodyPart.LEFT_LEG;
+            case "r_leg", "rleg"            -> BodyPart.RIGHT_LEG;
+            case "arm"                       -> BodyPart.LEFT_ARM;
+            case "leg"                       -> BodyPart.LEFT_LEG;
+            default -> null;
+        };
     }
 
     private static Wound parseWound(String name) {
